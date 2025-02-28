@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./globals.css";
 import Link from "next/link";
 
@@ -28,15 +29,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex h-screen">
-          <aside className="w-64 bg-gray-800 text-white p-4">
-            <h1 className="text-xl font-bold mb-4">Sidebar</h1>
+        <div className="flex h-screen font-albert">
+          <aside className="w-64 bg-white bg-opacity-5 p-4 text-white">
+            <h1 className="mb-4 text-xl font-bold">Sidebar</h1>
             <nav>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/"
-                    className="block p-2 hover:bg-gray-700 rounded"
+                    className="block rounded p-2 hover:bg-gray-700"
                   >
                     Chat
                   </Link>
@@ -44,7 +45,7 @@ export default function RootLayout({
                 <li>
                   <Link
                     href="/hives"
-                    className="block p-2 hover:bg-gray-700 rounded"
+                    className="block rounded p-2 hover:bg-gray-700"
                   >
                     Manage Hives
                   </Link>
@@ -52,7 +53,7 @@ export default function RootLayout({
                 <li>
                   <Link
                     href="/settings"
-                    className="block p-2 hover:bg-gray-700 rounded"
+                    className="block rounded p-2 hover:bg-gray-700"
                   >
                     Manage Settings
                   </Link>
@@ -60,7 +61,7 @@ export default function RootLayout({
               </ul>
             </nav>
           </aside>
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1">{children}</main>
         </div>
       </body>
     </html>
