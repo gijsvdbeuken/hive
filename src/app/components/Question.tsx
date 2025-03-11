@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-const UserMessage = ({ question }: { question: string }) => {
+const Question = ({ question }: { question: string }) => {
   return (
     <div className="flex w-[100%] flex-row justify-end">
       <div className="rounded-md bg-white bg-opacity-10 p-5">{question}</div>
@@ -8,4 +8,4 @@ const UserMessage = ({ question }: { question: string }) => {
   );
 };
 
-export default UserMessage;
+export default Question;

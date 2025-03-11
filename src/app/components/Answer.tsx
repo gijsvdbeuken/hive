@@ -1,6 +1,6 @@
 import React from 'react';
 
-const HiveMessage = ({ answer }: { answer: string }) => {
+const Answer = ({ answer }: { answer: string }) => {
   return (
     <div className="flex w-full flex-row justify-start">
       <div className="mt-5 h-5 w-5 flex-shrink-0 rounded-full bg-orange-500"></div>
@@ -9,4 +9,4 @@ const HiveMessage = ({ answer }: { answer: string }) => {
   );
 };
 
-export default HiveMessage;
+export default Answer;
