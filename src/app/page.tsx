@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
-import Question from './components/Question';
-import Answer from './components/Answer';
-import Questionbar from './components/Questionbar';
+import Question from './components/home/Question';
+import Answer from './components/home/Answer';
+import Questionbar from './components/home/Questionbar';
 
 export default function Home() {
   const [messages, setMessages] = useState<{ question: string; answer?: string }[]>([]);

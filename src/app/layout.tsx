@@ -4,7 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import './globals.css';
 import logo from '../../public/logo-full-white-multicolor.png';
 import Link from 'next/link';
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/home/Sidebar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
