@@ -10,7 +10,7 @@ const Navigation = () => {
       <div className="my-2 h-[1.5px] w-full rounded-full bg-white bg-opacity-10"></div>
       <nav>
         <ul>
-          <li className={pathname === '/' ? 'flex items-center rounded-md bg-white bg-opacity-5 py-2' : 'flex items-center py-2 text-white text-opacity-50'}>
+          <li className={pathname === '/' ? 'flex items-center rounded-md bg-white bg-opacity-10 py-2' : 'flex items-center py-2 text-white text-opacity-50'}>
             <div className="flex w-[40px] justify-center">
               <i className="fa-regular fa-message"></i>
             </div>
@@ -18,7 +18,7 @@ const Navigation = () => {
               Chat
             </Link>
           </li>
-          <li className={pathname === '/hives' ? 'flex items-center rounded-md bg-white bg-opacity-5 py-2' : 'flex items-center py-2 text-white text-opacity-50'}>
+          <li className={pathname === '/hives' ? 'flex items-center rounded-md bg-white bg-opacity-10 py-2' : 'flex items-center py-2 text-white text-opacity-50'}>
             <div className="flex w-[40px] justify-center">
               <i className="fa-solid fa-hexagon-nodes"></i>
             </div>
@@ -26,7 +26,7 @@ const Navigation = () => {
               Manage Hives
             </Link>
           </li>
-          <li className={pathname === '/settings' ? 'flex items-center rounded-md bg-white bg-opacity-5 py-2' : 'flex items-center py-2 text-white text-opacity-50'}>
+          <li className={pathname === '/settings' ? 'flex items-center rounded-md bg-white bg-opacity-10 py-2' : 'flex items-center py-2 text-white text-opacity-50'}>
             <div className="flex w-[40px] justify-center">
               <i className="fa-solid fa-sliders"></i>
             </div>

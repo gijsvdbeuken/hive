@@ -9,7 +9,7 @@ const History = () => {
           <p className="text-white text-opacity-50">Dummy converstion</p>
           <small>Created on 11 of March, 10:34</small>
         </div>
-        <div className="border-1 rounded-md border-[1.5px] border-white border-opacity-10 p-2 text-white text-opacity-50">
+        <div className="rounded-md border-[1.5px] border-white border-opacity-10 p-2 text-white text-opacity-50">
           <p className="text-white text-opacity-50">Dummy converstion</p>
           <small>Created on 11 of March, 10:34</small>
         </div>
