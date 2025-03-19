@@ -4,6 +4,10 @@ FROM node:18-alpine AS builder
 # Set the working directory inside the container
 WORKDIR /app
 
+# Declare the build argument BEFORE you need it
+ARG OPENAI_API_KEY
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+
 # Copy package.json and package-lock.json for installing dependencies
 COPY package*.json ./
 
@@ -22,6 +26,10 @@ FROM node:18-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
+# Declare the build argument again for the final image
+ARG OPENAI_API_KEY
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+
 # Copy the node_modules and built application from the builder stage
 COPY --from=builder /app /app
 
@@ -33,12 +41,4 @@ ENV NODE_ENV=production
 
 # Run the Next.js app in production mode
 CMD ["npm", "start"]
-
-# Declare the build argument
-ARG OPENAI_API_KEY
-
-# Set it as an environment variable so the app can use it
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-
-# Continue with the rest of your Dockerfile...
 
