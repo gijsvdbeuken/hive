@@ -33,3 +33,12 @@ ENV NODE_ENV=production
 
 # Run the Next.js app in production mode
 CMD ["npm", "start"]
+
+# Declare the build argument
+ARG OPENAI_API_KEY
+
+# Set it as an environment variable so the app can use it
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+
+# Continue with the rest of your Dockerfile...
+
