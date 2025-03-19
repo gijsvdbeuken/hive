@@ -27,11 +27,11 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t yourdockerhubusername/nextjs-app:${{ github.sha }} .
+          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t ${{ secrets.DOCKER_USERNAME }}/nextjs-app:${{ github.sha }} .
 
       - name: Push the Docker image
         run: |
-          docker push yourdockerhubusername/nextjs-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/nextjs-app:${{ github.sha }}
 
       - name: Deploy to server (optional)
         run: |
