@@ -1,5 +1,6 @@
 import React from 'react';
 import HiveBlock from './components/HiveBlock';
+import HiveBar from './components/HiveBar';
 
 const HivesPage = () => {
   return (
@@ -18,8 +19,9 @@ const HivesPage = () => {
       </div>
       <div className="flex w-[800px] flex-col items-start justify-end gap-2 py-10">
         <h2 className="font-albert text-[32px] font-bold">Custom Models</h2>
-        <div className="flex w-full gap-4">
-          <HiveBlock selected={true} name="One" description="Better at coding and math related problem solving" />
+        <div className="flex w-full flex-col gap-4">
+          <HiveBar selected={true} name="One" description="Better at coding and math related problem solving" />
+          <HiveBar selected={true} name="One" description="Better at coding and math related problem solving" />
         </div>
       </div>
     </div>

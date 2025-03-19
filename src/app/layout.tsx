@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './globals.css';
-import logo from '../../public/logo-full-white-multicolor.png';
-import Link from 'next/link';
+//import logo from '../../public/logo-full-white-multicolor.png';
+//import Link from 'next/link';
 import Sidebar from './components/home/Sidebar';
 
 const geistSans = Geist({
