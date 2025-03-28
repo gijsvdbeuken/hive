@@ -1,14 +1,15 @@
 import React from 'react';
 
 interface HiveBlockProps {
+  onClick: () => void;
   selected: boolean;
   name: string;
   description: string;
 }
 
-const HiveBlock: React.FC<HiveBlockProps> = ({ selected, name, description }) => {
+const HiveBlock: React.FC<HiveBlockProps> = ({ onClick, selected, name, description }) => {
   return (
-    <div className={selected ? 'w-full rounded-md border-[1.5px] border-white border-opacity-25 bg-white bg-opacity-5 p-4' : 'w-full rounded-md border-[1.5px] border-white border-opacity-10 bg-opacity-10 p-4 opacity-75'}>
+    <div onClick={onClick} className={`w-full cursor-pointer rounded-md border-[1.5px] p-4 transition-all ${selected ? 'border-white border-opacity-25 bg-white bg-opacity-5' : 'border-white border-opacity-10 bg-opacity-10 opacity-50 hover:opacity-100'}`}>
       <h2 className="text-[24px] font-bold">{name}</h2>
       <p>{description}.</p>
       <div className="my-2 h-[1.5px] w-full rounded-full bg-white bg-opacity-10"></div>
