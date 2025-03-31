@@ -1,21 +1,28 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Question from './components/home/Question';
 import Answer from './components/home/Answer';
 import Questionbar from './components/home/Questionbar';
+import { useActiveChatContext } from './context/activeChatContext';
 
 export default function Home() {
-  const [messages, setMessages] = useState<{ question: string; answer?: string }[]>([]);
+  const { messages, addQuestion, updateLastMessageAnswer } = useActiveChatContext();
 
   async function handleSubmit(question: string) {
-    setMessages([...messages, { question, answer: undefined }]);
-    const res = await fetch('/api/openai', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question }),
-    });
-    const data = await res.json();
-    setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? { ...msg, answer: data.content } : msg)));
+    addQuestion(question);
+
+    try {
+      const res = await fetch('/api/openai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question }),
+      });
+      const data = await res.json();
+      updateLastMessageAnswer(data.content);
+    } catch (error) {
+      console.error('Error fetching response:', error);
+      updateLastMessageAnswer('Error: Unable to fetch response');
+    }
   }
 
   return (
