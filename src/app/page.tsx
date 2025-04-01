@@ -8,17 +8,17 @@ import { useActiveChatContext } from './context/activeChatContext';
 export default function Home() {
   const { messages, addQuestion, updateLastMessageAnswer } = useActiveChatContext();
 
-  async function handleSubmit(question: string) {
-    addQuestion(question);
+  async function handleSubmit(message: string) {
+    addQuestion(message);
 
     try {
       const res = await fetch('/api/openai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ message }),
       });
       const data = await res.json();
-      updateLastMessageAnswer(data.content);
+      updateLastMessageAnswer(data.message);
     } catch (error) {
       console.error('Error fetching response:', error);
       updateLastMessageAnswer('Error: Unable to fetch response');
