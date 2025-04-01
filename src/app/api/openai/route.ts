@@ -40,6 +40,8 @@ export async function POST(req: Request) {
     const memoryVariables = await memory.loadMemoryVariables({});
     console.log('Current memory:', memoryVariables);
 
+    response.response = response.response.replace(/^[,.!?;:]+\s*/, '');
+
     return NextResponse.json({
       message: response.response,
     });
