@@ -12,11 +12,18 @@ export default function Home() {
     addQuestion(message);
 
     try {
+      const res = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      /*
       const res = await fetch('/api/openai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
       });
+      */
       const data = await res.json();
       updateLastMessageAnswer(data.message);
     } catch (error) {
