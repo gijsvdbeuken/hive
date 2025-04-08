@@ -8,8 +8,8 @@ interface Message {
 
 interface ActiveChatContextType {
   messages: Message[];
-  addQuestion: (question: string) => void;
-  updateLastMessageAnswer: (answer: string) => void;
+  addMessage: (question: string) => void;
+  updateMessages: (answer: string) => void;
   clearMessages: () => void;
 }
 
@@ -18,7 +18,7 @@ const ActiveChatContext = createContext<ActiveChatContextType | undefined>(undef
 export function ActiveChatProvider({ children }: { children: React.ReactNode }) {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  function addQuestion(question: string) {
+  function addMessage(question: string) {
     setMessages((prevMessages) => [
       ...prevMessages,
       {
@@ -28,7 +28,7 @@ export function ActiveChatProvider({ children }: { children: React.ReactNode }) 
     ]);
   }
 
-  function updateLastMessageAnswer(answer: string) {
+  function updateMessages(answer: string) {
     setMessages((prevMessages) => {
       const updatedMessages = [...prevMessages];
       if (updatedMessages.length > 0) {
@@ -46,8 +46,8 @@ export function ActiveChatProvider({ children }: { children: React.ReactNode }) 
     <ActiveChatContext.Provider
       value={{
         messages,
-        addQuestion,
-        updateLastMessageAnswer,
+        addMessage,
+        updateMessages: updateMessages,
         clearMessages,
       }}
     >

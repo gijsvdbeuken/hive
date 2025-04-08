@@ -1,15 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
 import Question from './components/home/Question';
 import Answer from './components/home/Answer';
 import Questionbar from './components/home/Questionbar';
 import { useActiveChatContext } from './context/activeChatContext';
 
 export default function Home() {
-  const { messages, addQuestion, updateLastMessageAnswer } = useActiveChatContext();
+  const { messages, addMessage, updateMessages } = useActiveChatContext();
 
   async function handleSubmit(message: string) {
-    addQuestion(message);
+    addMessage(message);
 
     try {
       const res = await fetch('/api/claude', {
@@ -24,11 +23,12 @@ export default function Home() {
         body: JSON.stringify({ message }),
       });
       */
+
       const data = await res.json();
-      updateLastMessageAnswer(data.message);
+      updateMessages(data.message);
     } catch (error) {
       console.error('Error fetching response:', error);
-      updateLastMessageAnswer('Error: Unable to fetch response');
+      updateMessages('Error: Unable to fetch response');
     }
   }
 

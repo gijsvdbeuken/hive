@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1000,
       temperature: 1,
-      system: 'Respond only with short poems.',
+      system: '',
       messages: [
         {
           role: 'user',
