@@ -1,19 +1,30 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import llmResponsesRoutes from './routes/llmResponsesRoutes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const express = require('express');
 const app = express();
 const port = process.env.PORT || null;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 if (!port) {
-  console.error('Error: The server port was not found in the environment variables. Please define the PORT variable in your .env file.');
+  console.error('Error: The server port was not found in the environment variables.');
   process.exit(1);
 }
 
 app.use(express.json());
-
-const userRoutes = require('./routes/llmResponses');
-
-app.use('/users', userRoutes);
+app.use(
+  cors({
+    origin: '*',
+    credentials: true,
+  }),
+);
+app.use('/chat', llmResponsesRoutes);
 
 app.listen(port, () => {
   console.log(`User Service running at http://localhost:${port}`);

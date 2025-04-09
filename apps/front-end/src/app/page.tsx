@@ -11,18 +11,18 @@ export default function Home() {
     addMessage(message);
 
     try {
-      const res = await fetch('/api/claude', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
-      });
       /*
-      const res = await fetch('/api/openai', {
+      const res = await fetch('http://localhost:3002/chat/openai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
       });
       */
+      const res = await fetch('http://localhost:3002/chat/anthropic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
 
       const data = await res.json();
       updateMessages(data.message);
