@@ -11,14 +11,12 @@ router.post('/openai', async (req, res) => {
   if (!req.body.message || !req.body.message.trim()) {
     return res.status(400).json({ error: 'No message provided.' });
   }
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
   try {
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
     const { message } = req.body;
     const completion = await openai.chat.completions.create({
-      role: 'system',
-      content: 'Je bent een Nederlandstalige LLM.',
       messages: [{ role: 'user', content: message }],
       model: 'gpt-3.5-turbo',
     });
@@ -38,10 +36,10 @@ router.post('/anthropic', async (req, res) => {
   if (!req.body.message || !req.body.message.trim()) {
     return res.status(400).json({ error: 'No message provided.' });
   }
-  const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  });
   try {
+    const anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
     const { message } = req.body;
     const msg = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219',
