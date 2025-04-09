@@ -18,14 +18,14 @@ export default function Home() {
         body: JSON.stringify({ message }),
       });
       */
-      const res = await fetch('http://localhost:3002/chat/anthropic', {
+      const res = await fetch('http://localhost:3002/chat/openai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
       });
 
       const data = await res.json();
-      updateMessages(data.message);
+      updateMessages(data.message.answer);
     } catch (error) {
       console.error('Error fetching response:', error);
       updateMessages('Error: Unable to fetch response');
