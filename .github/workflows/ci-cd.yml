@@ -21,6 +21,20 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Install Next.js globally
+        run: npm install -g next
+
+      - name: Create package.json with Next.js in root
+        run: |
+          echo '{
+            "name": "hive-root",
+            "private": true,
+            "dependencies": {
+              "next": "^14.0.0"
+            }
+          }' > package.json
+          npm install
+
       - name: Install dependencies for front-end
         run: |
           cd ./apps/front-end
@@ -31,13 +45,10 @@ jobs:
           cd ./apps/front-end
           npm run build
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
       - name: Deploy to Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          cd ./apps/front-end
-          vercel deploy . --token $VERCEL_TOKEN --prod --yes
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-params: '--prod'
+          working-directory: ./apps/front-end
