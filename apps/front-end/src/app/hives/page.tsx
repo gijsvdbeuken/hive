@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import HiveBlock from './components/HiveBlock';
 import { useAppContext } from '../context/activeHiveContext';
 
