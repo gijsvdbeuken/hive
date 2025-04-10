@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const port = process.env.PORT || null;
+const port = process.env.SERVICE_LLM_RESPONSES || null;
 
 if (!port) {
   console.error('Error: The server port was not found in the environment variables.');
