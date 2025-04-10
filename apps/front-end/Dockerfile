@@ -4,10 +4,6 @@ FROM node:18-alpine AS builder
 # Set the working directory inside the container
 WORKDIR /app
 
-# Declare the build argument BEFORE you need it
-ARG OPENAI_API_KEY
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-
 # Copy package.json and package-lock.json for installing dependencies
 COPY package*.json ./
 
@@ -25,10 +21,6 @@ FROM node:18-alpine
 
 # Set the working directory inside the container
 WORKDIR /app
-
-# Declare the build argument again for the final image
-ARG OPENAI_API_KEY
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 # Copy the node_modules and built application from the builder stage
 COPY --from=builder /app /app

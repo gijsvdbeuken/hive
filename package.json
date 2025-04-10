@@ -5,7 +5,7 @@
   "scripts": {
     "start": "concurrently \"npm run start-front-end\" \"npm run start-service-llm-responses\"",
     "start-front-end": "npm --prefix ./apps/front-end run dev",
-    "start-service-llm-responses": "node ./apps/service-llm-responses/src/server.js"
+    "start-service-llm-responses": "nodemon ./apps/service-llm-responses/src/server.js"
   },
   "keywords": [],
   "author": "",
