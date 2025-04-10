@@ -16,23 +16,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          node-version: '18'
 
-      - name: Build the Docker image
+      - name: Install dependencies for front-end
         run: |
-          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t ${{ secrets.DOCKER_USERNAME }}/nextjs-app:${{ github.sha }} ./apps/front-end
+          cd ./apps/front-end
+          npm install
 
-      - name: Push the Docker image
+      - name: Build Next.js app
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/nextjs-app:${{ github.sha }}
+          cd ./apps/front-end
+          npm run build
 
-      - name: Deploy to server (optional)
-        run: |
-          # Deployment steps (e.g., SSH into your server and pull the image)
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-params: '--prod'
