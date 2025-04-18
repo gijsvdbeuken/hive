@@ -31,7 +31,7 @@ jobs:
 
       - name: Push the Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/nextjs-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/service-llm-responses:${{ github.sha }}
 
       - name: Deploy to server (optional)
         run: |
