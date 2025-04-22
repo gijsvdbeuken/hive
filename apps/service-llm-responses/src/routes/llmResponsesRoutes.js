@@ -7,6 +7,12 @@ dotenv.config();
 
 const router = express.Router();
 
+router.post('/test', async (req, res) => {
+  console.log('Message received at microservice!');
+  const { message } = req.body;
+  res.json({ message: { answer: `Echo: ${message}` } });
+});
+
 router.post('/openai', async (req, res) => {
   if (!req.body.message || !req.body.message.trim()) {
     return res.status(400).json({ error: 'No message provided.' });

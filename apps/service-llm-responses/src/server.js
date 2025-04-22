@@ -25,7 +25,7 @@ app.use(
     credentials: true,
   }),
 );
-app.use('/chat', llmResponsesRoutes);
+app.use('/api/chat', llmResponsesRoutes);
 
 app.listen(port, () => {
   console.log(`service-llm-responses running at http://localhost:${port}`);
