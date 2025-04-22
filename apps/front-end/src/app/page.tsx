@@ -11,7 +11,7 @@ export default function Home() {
     addMessage(message);
 
     try {
-      const res = await fetch('http://localhost:3002/chat/openai', {
+      const res = await fetch('http://localhost:5001/api/chat/openai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),

@@ -1,20 +1,39 @@
 import express from 'express';
+import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const app = express();
+const PORT = 5001;
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    methods: ['POST', 'GET', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+  }),
+);
 
 app.use(
   '/api/chat',
   createProxyMiddleware({
     target: 'http://localhost:3002',
     changeOrigin: true,
-    pathRewrite: { '^/api/chat': '/chat' },
+    pathRewrite: {
+      '^/api': '',
+    },
+    logLevel: 'debug',
   }),
 );
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`api gateway is running on http://localhost:${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`API Gateway running on http://localhost:${PORT}`);
 });
 
-setInterval(() => {}, 60000);
+server.on('error', (error) => {
+  console.error('Server error:', error);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
