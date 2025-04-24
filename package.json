@@ -14,5 +14,8 @@
   "description": "",
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "@auth0/nextjs-auth0": "^4.4.2"
   }
 }
