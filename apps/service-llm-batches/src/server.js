@@ -1,22 +1,32 @@
-require("dotenv").config();
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import llmBatchesRoutes from './routes/llmBatchesRoutes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const express = require("express");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 const app = express();
-const port = process.env.PORT || null;
+const port = process.env.SERVICE_LLM_BATCHES || null;
 
 if (!port) {
-  console.error(
-    "Error: The server port was not found in the environment variables. Please define the PORT variable in your .env file."
-  );
+  console.error('Error: The server port was not found in the environment variables.');
   process.exit(1);
 }
 
 app.use(express.json());
-
-const userRoutes = require("./routes/userRoutes");
-
-app.use("/users", userRoutes);
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+app.use('/api/batches', llmBatchesRoutes);
 
 app.listen(port, () => {
-  console.log(`User Service running at http://localhost:${port}`);
+  console.log(`service-llm-responses running at http://localhost:${port}`);
 });

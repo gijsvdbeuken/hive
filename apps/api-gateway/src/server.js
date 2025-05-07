@@ -25,7 +25,7 @@ app.use(
     credentials: true,
   }),
 );
-app.use('/api/chat', apiGatewayRoutes);
+app.use('/api', apiGatewayRoutes);
 
 app.listen(port, () => {
   console.log(`api-gateway running at http://localhost:${port}`);

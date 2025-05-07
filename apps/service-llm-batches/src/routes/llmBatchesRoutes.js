@@ -1,20 +1,21 @@
-const express = require("express");
+import express from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const router = express.Router();
 
-// Simple GET route to fetch all users
-router.get("/", (req, res) => {
-  res.status(200).json({
-    message: "List of users (no logic yet)",
-  });
-  i;
-});
+router.post('/save-active-hive', (req, res) => {
+  const { activeHive } = req.body;
 
-// Simple POST route to create a new user
-router.post("/", (req, res) => {
-  const { username, email } = req.body;
-  res.status(201).json({
-    message: `User ${username} with email ${email} created (no logic yet)`,
-  });
-});
+  if (!activeHive || typeof activeHive !== 'string') {
+    return res.status(400).json({ error: 'Invalid or missing "activeBatch" string' });
+  }
 
-module.exports = router;
+  console.log(`✅ [llm-batches] Received active batch: ${activeHive}`);
+
+  // TODO: store to DB
+
+  res.status(200).json({ status: 'stored' });
+});
+export default router;

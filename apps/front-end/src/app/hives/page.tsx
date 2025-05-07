@@ -1,10 +1,30 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import HiveBlock from './components/HiveBlock';
 import { useAppContext } from '../context/activeHiveContext';
 
 const HivesPage = () => {
   const { activeHive, setActiveHive } = useAppContext();
+
+  useEffect(() => {
+    if (!activeHive) return;
+
+    const storeActiveHive = async () => {
+      try {
+        await fetch('http://localhost:3001/api/batches/save-active-hive', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ activeHive: activeHive }),
+        });
+      } catch (error) {
+        console.error('Error fetching response:', error);
+      }
+    };
+
+    storeActiveHive();
+  }, [activeHive]);
 
   return (
     <div className="flex h-[100%] flex-col items-center font-albert">
