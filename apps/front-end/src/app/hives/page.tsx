@@ -9,6 +9,7 @@ const HivesPage = () => {
   useEffect(() => {
     if (!activeHive) return;
 
+    /*
     const storeActiveHive = async () => {
       try {
         await fetch('http://localhost:3001/api/batches/save-active-hive', {
@@ -17,6 +18,25 @@ const HivesPage = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ activeHive: activeHive }),
+        });
+      } catch (error) {
+        console.error('Error fetching response:', error);
+      }
+    };
+    */
+
+    const storeActiveHive = async () => {
+      try {
+        const timestamp = Date.now();
+        const randomPart = Math.random().toString(36).substring(2, 8);
+        const uniqueHiveId = `hive_${timestamp}_${randomPart}`;
+
+        await fetch('http://localhost:3001/api/batches', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ hiveId: uniqueHiveId, models: ['gpt-4', 'claude-3'] }),
         });
       } catch (error) {
         console.error('Error fetching response:', error);

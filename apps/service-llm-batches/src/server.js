@@ -1,14 +1,17 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import llmBatchesRoutes from './routes/llmBatchesRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import connectDB from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+connectDB();
 
 const app = express();
 const port = process.env.SERVICE_LLM_BATCHES || null;
