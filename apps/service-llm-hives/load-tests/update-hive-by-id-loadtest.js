@@ -40,7 +40,7 @@ export default function () {
   };
 
   // Make a PATCH request to update the hive
-  const res = http.patch(`http://localhost:3003/api/batches/${hiveId}`, JSON.stringify(payload), { headers });
+  const res = http.patch(`http://localhost:3003/api/hives/${hiveId}`, JSON.stringify(payload), { headers });
 
   // Flexible content type check
   const isJson = (r) => r.headers['Content-Type'] && r.headers['Content-Type'].includes('application/json');

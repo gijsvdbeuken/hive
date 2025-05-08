@@ -31,7 +31,7 @@ const HivesPage = () => {
         const randomPart = Math.random().toString(36).substring(2, 8);
         const uniqueHiveId = `hive_${timestamp}_${randomPart}`;
 
-        await fetch('http://localhost:3001/api/batches', {
+        await fetch('http://localhost:3001/api/hives', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -17,7 +17,7 @@ export default function () {
   const hiveId = hiveIds[Math.floor(Math.random() * hiveIds.length)];
 
   // Keep the original endpoint path
-  const res = http.get(`http://localhost:3003/api/batches/${hiveId}`);
+  const res = http.get(`http://localhost:3003/api/hives/${hiveId}`);
 
   // More flexible content type check
   const isJson = (r) => r.headers['Content-Type'] && r.headers['Content-Type'].includes('application/json');
