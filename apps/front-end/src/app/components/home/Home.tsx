@@ -33,14 +33,15 @@ export default function ClientHome({ session }: { session: CustomSession | null 
   async function handleSubmit(message: string) {
     addMessage(message);
     try {
+      /*
       const res = await fetch('http://localhost:3001/api/chat/openai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
       });
-      console.log('Message has been sent from front-end...');
       const data = await res.json();
       updateMessages(data.message.answer);
+      */
     } catch (error) {
       console.error('Error fetching response:', error);
       updateMessages('Error: Unable to fetch response');
