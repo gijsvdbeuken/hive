@@ -6,8 +6,6 @@ import Answer from './Answer';
 import Questionbar from './Questionbar';
 import { useActiveChatContext } from '../../context/activeChatContext';
 
-const { messages, addMessage, updateMessages } = useActiveChatContext();
-
 type CustomSession = {
   user: {
     name?: string;
@@ -18,6 +16,8 @@ type CustomSession = {
 };
 
 export default function ClientHome({ session }: { session: CustomSession | null }) {
+  const { messages, addMessage, updateMessages } = useActiveChatContext();
+
   const router = useRouter();
 
   useEffect(() => {
