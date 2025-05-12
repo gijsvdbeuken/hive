@@ -25,7 +25,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Navigate to microservice directory
+      - name: Navigate to service-llm-hives directory
         run: cd apps/service-llm-hives/
 
       - name: Build the Docker image for service-llm-hives
@@ -37,17 +37,17 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/service-llm-hives:${{ github.sha }}
 
+      - name: Navigate to service-llm-responses directory
+        run: cd ../service-llm-responses/
+
+      - name: Build the Docker image for service-llm-responses
+        run: |
+          cd apps/service-llm-responses/
+          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t ${{ secrets.DOCKER_USERNAME }}/service-llm-responses:${{ github.sha }} .
+
+      - name: Push the Docker image for service-llm-responses
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/service-llm-responses:${{ github.sha }}
+
       - name: Deploy to server
         run: |
-          # Example deployment using SSH
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            # Pull latest image for service-llm-hives
-            docker pull ${{ secrets.DOCKER_USERNAME }}/service-llm-hives:${{ github.sha }}
-            
-            # Stop and remove existing container (optional)
-            docker stop service-llm-hives || true
-            docker rm service-llm-hives || true
-
-            # Run the new container for service-llm-hives
-            docker run -d -p 3000:3000 --name service-llm-hives ${{ secrets.DOCKER_USERNAME }}/service-llm-hives:${{ github.sha }}
-          EOF
