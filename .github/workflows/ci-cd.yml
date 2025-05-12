@@ -38,7 +38,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/service-llm-hives:${{ github.sha }}
 
       - name: Navigate to service-llm-responses directory
-        run: cd ../service-llm-responses/
+        run: cd apps/service-llm-responses/
 
       - name: Build the Docker image for service-llm-responses
         run: |
