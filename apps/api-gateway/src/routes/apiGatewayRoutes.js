@@ -12,7 +12,7 @@ dotenv.config();
 
 const ROUTING_MAP = {
   '/chat': `http://localhost:${process.env.SERVICE_LLM_RESPONSES}`,
-  '/batches': `http://localhost:${process.env.SERVICE_LLM_BATCHES}`,
+  '/hives': `http://localhost:${process.env.SERVICE_LLM_HIVES}`,
 };
 
 const router = express.Router();

@@ -36,6 +36,7 @@ router.post('/', async (req, res) => {
     models: req.body.models,
   });
   try {
+    console.log('TRYING TO CREATE A NEW HIVE');
     const newHive = await hive.save();
     res.status(201).json(newHive);
     console.log('New hive created successfully!');
