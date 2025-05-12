@@ -6,7 +6,18 @@ import Answer from './Answer';
 import Questionbar from './Questionbar';
 import { useActiveChatContext } from '../../context/activeChatContext';
 
-export default function ClientHome({ session }: { session: any }) {
+const { messages, addMessage, updateMessages } = useActiveChatContext();
+
+type CustomSession = {
+  user: {
+    name?: string;
+    email?: string;
+    picture?: string;
+    sub: string;
+  };
+};
+
+export default function ClientHome({ session }: { session: CustomSession | null }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -18,8 +29,6 @@ export default function ClientHome({ session }: { session: any }) {
   if (!session) {
     return null;
   }
-
-  const { messages, addMessage, updateMessages } = useActiveChatContext();
 
   async function handleSubmit(message: string) {
     addMessage(message);
