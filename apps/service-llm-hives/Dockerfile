@@ -11,10 +11,10 @@ COPY package*.json ./
 RUN npm install
 
 # Copy the rest of the application code
-COPY . .
+COPY ./src ./src
 
 # Expose the port your Express app runs on
 EXPOSE 3003
 
 # Define the command to run the app
-CMD ["node", "index.js"]
+CMD ["node", "src/server.js"]
