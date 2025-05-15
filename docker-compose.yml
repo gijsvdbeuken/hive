@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  service-llm-hives:
+    build:
+      context: ./apps/service-llm-hives
+      dockerfile: Dockerfile
+    env_file:
+      - ./apps/service-llm-hives/.env
+    ports:
+      - '3003:3003'
+
+  service-llm-responses:
+    build:
+      context: ./apps/service-llm-responses
+      dockerfile: Dockerfile
+    env_file:
+      - ./apps/service-llm-responses/.env
+    ports:
+      - '3004:3004'
