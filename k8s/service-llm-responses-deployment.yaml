@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-llm-responses
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-llm-responses
+  template:
+    metadata:
+      labels:
+        app: service-llm-responses
+    spec:
+      containers:
+        - name: service-llm-responses
+          image: gijsvdbeuken/service-llm-responses:latest
+          ports:
+            - containerPort: 3004
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-secret
+                  key: api-key
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: anthropic-secret
+                  key: api-key
