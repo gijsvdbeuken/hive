@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,35 +19,45 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Docker Hub
+      - name: Log in to Docker registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: registry.digitalocean.com
+          username: ${{ secrets.DO_REGISTRY_USERNAME }}
+          password: ${{ secrets.DO_REGISTRY_PASSWORD }}
 
-      - name: Navigate to service-llm-hives directory
-        run: cd apps/service-llm-hives/
-
-      - name: Build the Docker image for service-llm-hives
+      - name: Build and push service-llm-hives image
         run: |
-          cd apps/service-llm-hives/
-          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t ${{ secrets.DOCKER_USERNAME }}/service-llm-hives:${{ github.sha }} .
+          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }} ./apps/service-llm-hives/
+          docker push registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }}
 
-      - name: Push the Docker image for service-llm-hives
+      - name: Build and push service-llm-responses image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/service-llm-hives:${{ github.sha }}
+          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }} ./apps/service-llm-responses/
+          docker push registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}
 
-      - name: Navigate to service-llm-responses directory
-        run: cd apps/service-llm-responses/
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
 
-      - name: Build the Docker image for service-llm-responses
+      - name: Configure kubeconfig
         run: |
-          cd apps/service-llm-responses/
-          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t ${{ secrets.DOCKER_USERNAME }}/service-llm-responses:${{ github.sha }} .
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
 
-      - name: Push the Docker image for service-llm-responses
+      - name: Update Kubernetes manifests with new image tags
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/service-llm-responses:${{ github.sha }}
+          sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-hives:.*|registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }}|g" ./k8s/service-llm-hives-deployment.yaml
+          sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-responses:.*|registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}|g" ./k8s/service-llm-responses-deployment.yaml
 
-      - name: Deploy to server
+      - name: Apply Kubernetes manifests
+        run: kubectl apply -f ./k8s
+
+      - name: Rollout restart deployments
         run: |
+          kubectl rollout restart deployment service-llm-hives
+          kubectl rollout restart deployment service-llm-responses
+
+      - name: Verify pods status
+        run: kubectl get pods
