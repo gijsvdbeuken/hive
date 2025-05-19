@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-llm-hives
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-llm-hives
+  template:
+    metadata:
+      labels:
+        app: service-llm-hives
+    spec:
+      containers:
+        - name: service-llm-hives
+          image: gijsvdbeuken/service-llm-hives:latest
+          ports:
+            - containerPort: 3003
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: uri
