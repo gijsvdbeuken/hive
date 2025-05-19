@@ -12,9 +12,11 @@ spec:
       labels:
         app: service-llm-hives
     spec:
+      imagePullSecrets:
+        - name: do-registry
       containers:
         - name: service-llm-hives
-          image: gijsvdbeuken/service-llm-hives:latest
+          image: registry.digitalocean.com/hive-services-registry/service-llm-hives:latest
           ports:
             - containerPort: 3003
           env:

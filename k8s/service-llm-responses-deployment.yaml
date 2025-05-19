@@ -12,9 +12,11 @@ spec:
       labels:
         app: service-llm-responses
     spec:
+      imagePullSecrets:
+        - name: do-registry
       containers:
         - name: service-llm-responses
-          image: gijsvdbeuken/service-llm-responses:latest
+          image: registry.digitalocean.com/hive-services-registry/service-llm-responses:latest
           ports:
             - containerPort: 3004
           env:
@@ -26,5 +28,5 @@ spec:
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: anthropic-secret
+                  name: openai-secret
                   key: api-key
