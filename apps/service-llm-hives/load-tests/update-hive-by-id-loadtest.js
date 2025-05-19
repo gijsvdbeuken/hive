@@ -30,7 +30,6 @@ export default function () {
     payload.status = statusOptions[Math.floor(Math.random() * statusOptions.length)];
   }
 
-  // 50% chance to update models
   if (Math.random() < 0.5) {
     payload.models = modelOptions[Math.floor(Math.random() * modelOptions.length)];
   }
@@ -39,10 +38,8 @@ export default function () {
     'Content-Type': 'application/json',
   };
 
-  // Make a PATCH request to update the hive
   const res = http.patch(`http://localhost:3003/api/hives/${hiveId}`, JSON.stringify(payload), { headers });
 
-  // Flexible content type check
   const isJson = (r) => r.headers['Content-Type'] && r.headers['Content-Type'].includes('application/json');
 
   const checks = check(res, {
