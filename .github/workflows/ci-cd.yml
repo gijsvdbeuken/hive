@@ -77,20 +77,20 @@ jobs:
 
             # Create job YAML on-the-fly and apply it
             cat <<EOF | kubectl apply -f -
-            apiVersion: batch/v1
-            kind: Job
-            metadata:
-              name: k6-$test
-            spec:
-              template:
-                spec:
-                  containers:
-                    - name: k6
-                      image: registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }}
-                      command: ["k6", "run", "/tests/$test.js"]
-                  restartPolicy: Never
-              backoffLimit: 0
-            EOF
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: k6-$test
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: k6
+                    image: registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }}
+                    command: ["k6", "run", "/tests/$test.js"]
+                restartPolicy: Never
+            backoffLimit: 0
+          EOF
 
             # Wait for job completion
             kubectl wait --for=condition=complete --timeout=300s job/k6-$test
