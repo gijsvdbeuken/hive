@@ -69,7 +69,8 @@ jobs:
 
       - name: Run K6 load test jobs
         run: |
-          for test in test1 test2 test3 test4; do
+          for test in create-hive-loadtest get-hive-by-id-loadtest get-hives-loadtest update-hive-by-id-loadtest; do
+
             echo "Running K6 test: $test"
             
             # Clean up old job if it exists
