@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, fail } from 'k6';
 import { sleep } from 'k6';
 
-const hiveIds = ['hive_1746691746439_noluc4', 'hive_1746691747344_jzrr0y', 'hive_1746705491532_bz1uy9', 'hive_1746705492597_4wf198'];
+const hiveIds = ['hive_1747035987865_70p8sc', 'hive_1747035987866_q1hl3x', 'hive_1747035988812_5qsbsh', 'hive_1747036315850_chc9k6'];
 
 export let options = {
   stages: [
@@ -13,13 +13,10 @@ export let options = {
 };
 
 export default function () {
-  // Select a random hiveId from the list
   const hiveId = hiveIds[Math.floor(Math.random() * hiveIds.length)];
 
-  // Keep the original endpoint path
   const res = http.get(`http://localhost:3003/api/hives/${hiveId}`);
 
-  // More flexible content type check
   const isJson = (r) => r.headers['Content-Type'] && r.headers['Content-Type'].includes('application/json');
 
   const checks = check(res, {

@@ -61,3 +61,42 @@ jobs:
 
       - name: Verify pods status
         run: kubectl get pods
+
+      - name: Build and push K6 load test image
+        run: |
+          docker build -t registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }} ./apps/service-llm-hives/k6
+          docker push registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }}
+
+      - name: Run K6 load test jobs
+        run: |
+          for test in test1 test2 test3 test4; do
+            echo "Running K6 test: $test"
+            
+            # Clean up old job if it exists
+            kubectl delete job k6-$test --ignore-not-found
+
+            # Create job YAML on-the-fly and apply it
+            cat <<EOF | kubectl apply -f -
+            apiVersion: batch/v1
+            kind: Job
+            metadata:
+              name: k6-$test
+            spec:
+              template:
+                spec:
+                  containers:
+                    - name: k6
+                      image: registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }}
+                      command: ["k6", "run", "/tests/$test.js"]
+                  restartPolicy: Never
+              backoffLimit: 0
+            EOF
+
+            # Wait for job completion
+            kubectl wait --for=condition=complete --timeout=300s job/k6-$test
+
+            # Show logs
+            echo "Logs for $test:"
+            kubectl logs job/k6-$test
+
+          done
