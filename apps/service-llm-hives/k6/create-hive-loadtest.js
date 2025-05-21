@@ -27,7 +27,7 @@ export default function () {
     'Content-Type': 'application/json',
   };
 
-  const res = http.post('http://localhost:3001/api/hives', payload, { headers });
+  const res = http.post('http://service-llm-hives.default.svc.cluster.local:3003/api/hives', payload, { headers });
 
   check(res, {
     'status is 200 or 201': (r) => r.status === 200 || r.status === 201,

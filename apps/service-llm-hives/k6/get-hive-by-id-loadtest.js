@@ -15,7 +15,7 @@ export let options = {
 export default function () {
   const hiveId = hiveIds[Math.floor(Math.random() * hiveIds.length)];
 
-  const res = http.get(`http://localhost:3003/api/hives/${hiveId}`);
+  const res = http.get(`http://service-llm-hives.default.svc.cluster.local:3003/api/hives/${hiveId}`);
 
   const isJson = (r) => r.headers['Content-Type'] && r.headers['Content-Type'].includes('application/json');
 

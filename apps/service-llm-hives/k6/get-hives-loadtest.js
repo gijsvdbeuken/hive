@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-const API_URL = 'http://localhost:3003/api/hives';
+const API_URL = 'http://service-llm-hives.default.svc.cluster.local:3003/api/hives';
 
 export const options = {
   stages: [

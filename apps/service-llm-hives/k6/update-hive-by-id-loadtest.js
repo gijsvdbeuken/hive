@@ -38,7 +38,7 @@ export default function () {
     'Content-Type': 'application/json',
   };
 
-  const res = http.patch(`http://localhost:3003/api/hives/${hiveId}`, JSON.stringify(payload), { headers });
+  const res = http.patch(`http://service-llm-hives.default.svc.cluster.local:3003/api/hives/${hiveId}`, JSON.stringify(payload), { headers });
 
   const isJson = (r) => r.headers['Content-Type'] && r.headers['Content-Type'].includes('application/json');
 
