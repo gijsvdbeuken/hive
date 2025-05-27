@@ -2,41 +2,38 @@
 import React, { useEffect } from 'react';
 import HiveBlock from './components/HiveBlock';
 import { useAppContext } from '../context/activeHiveContext';
+//import { useUser } from '@auth0/nextjs-auth0/client';
 
 const HivesPage = () => {
+  //const { user, isLoading } = useUser();
   const { activeHive, setActiveHive } = useAppContext();
 
   useEffect(() => {
     if (!activeHive) return;
-
-    /*
-    const storeActiveHive = async () => {
-      try {
-        await fetch('http://localhost:3001/api/batches/save-active-hive', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ activeHive: activeHive }),
-        });
-      } catch (error) {
-        console.error('Error fetching response:', error);
+    function generateUniqueId(length = 10) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-    };
-    */
-
+      return result;
+    }
     const storeActiveHive = async () => {
       try {
-        const timestamp = Date.now();
-        const randomPart = Math.random().toString(36).substring(2, 8);
-        const uniqueHiveId = `hive_${timestamp}_${randomPart}`;
+        // Change this later to retrieve dynamically
+        const ownerId = 'auth0|6554d3ba6ac7eefb66a50028';
 
+        const uniqueId = generateUniqueId();
+        const hiveId = `my-research-hive_${uniqueId}`;
+        const largeLanguageModels = ['GPT-4o', 'GPT-4o-mini', 'Claude 3.5 Sonnet'];
+
+        console.log('Throwing request to api-gateway...');
         await fetch('http://localhost:3001/api/hives', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ hiveId: uniqueHiveId, models: ['gpt-4', 'claude-3'] }),
+          body: JSON.stringify({ ownerId: ownerId, hiveId: hiveId, largeLanguageModels: largeLanguageModels }),
         });
       } catch (error) {
         console.error('Error fetching response:', error);

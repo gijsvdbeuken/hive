@@ -1,0 +1,29 @@
+{
+  "_id": "664c123456789abcdef01234",
+  "ownerId": "auth0|abc123",
+  "createdAt": "2024-06-01T14:30:00.000Z",
+  "updatedAt": "2024-06-01T14:30:00.000Z",
+  "hives": [
+    {
+      "id": "my-research-hive",
+      "createdAt": "2024-06-01T14:30:00.000Z",
+      "updatedAt": "2024-06-01T14:30:00.000Z",
+      "large_language_models": {
+        "model_1": "GPT-4o",
+        "model_2": "Claude 3.7 Sonnet",
+        "model_3": "DeepSeek R1"
+      }
+    },
+    {
+      "id": "my-math-hive",
+      "createdAt": "2024-06-01T14:30:00.000Z",
+      "updatedAt": "2024-06-01T14:30:00.000Z",
+      "large_language_models": {
+        "model_1": "GPT-4o-mini",
+        "model_2": "Claude 3.5 Sonnet",
+        "model_3": "DeepSeek R2"
+      }
+    }
+  ],
+  "schemaVersion": 1
+}

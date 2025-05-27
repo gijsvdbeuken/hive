@@ -29,6 +29,7 @@ async function forwardRequest(req, res) {
   const fullUrl = `${targetService}/api${path}`;
 
   try {
+    console.log('Throwing request to service-llm-hives...');
     const response = await fetch(fullUrl, {
       method: req.method,
       headers: {
