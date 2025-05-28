@@ -23,6 +23,9 @@ const pool = new Pool({
   database: PG_DATABASE,
   password: PG_PASSWORD,
   port: PG_PORT ? parseInt(PG_PORT) : 5432,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export const connectDB = async () => {

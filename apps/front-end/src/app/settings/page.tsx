@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
 interface User {
   auth0Id: string;
@@ -21,10 +21,10 @@ const SettingsPage: React.FC = () => {
   const [user, setUser] = useState<User>({
     auth0Id: 'auth0|6554d3ba6ac7eefb66a50028',
     email: 'gijs.vandenbeuken@gmail.com',
-    createdAt: 'unknown',
-    username: 'unknown',
+    createdAt: '',
+    username: '',
     role: 'unknown',
-    plan: 'unknown',
+    plan: 'free',
   });
 
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -33,6 +33,8 @@ const SettingsPage: React.FC = () => {
     notifications: false,
     betaOptIn: false,
   });
+
+  const [loading, setLoading] = useState(true);
 
   const handleUserChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -59,21 +61,87 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log('User data:', user);
-    console.log('Preferences:', preferences);
-    alert('Saved! (not connected to DB yet)');
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/auth0|6554d3ba6ac7eefb66a50028`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          language: preferences.language,
+          theme: preferences.theme,
+          email_notifications: preferences.notifications,
+          beta_features_opt_in: preferences.betaOptIn,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update preferences');
+      }
+
+      const updatedPrefs = await response.json();
+
+      setPreferences((prev) => ({
+        ...prev,
+        language: updatedPrefs.language,
+        theme: updatedPrefs.theme,
+        notifications: updatedPrefs.email_notifications,
+        betaOptIn: updatedPrefs.beta_features_opt_in,
+      }));
+
+      alert('Preferences updated successfully!');
+    } catch (error: any) {
+      console.error('Update failed:', error);
+      alert(`Failed to update preferences: ${error.message}`);
+    }
   };
 
   const inputClass = 'w-full bg-white bg-opacity-10 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch('http://localhost:3001/api/users/auth0|6554d3ba6ac7eefb66a50028');
+        if (!res.ok) throw new Error('Failed to fetch user data');
+        const data = await res.json();
+
+        setUser({
+          auth0Id: data.auth0_id ?? 'auth0|6554d3ba6ac7eefb66a50028',
+          email: data.email ?? 'gijs.vandenbeuken@gmail.com',
+          createdAt: data.created_at ?? '',
+          username: data.username ?? '',
+          role: data.role ?? 'unknown',
+          plan: data.plan ?? 'free',
+        });
+
+        setPreferences({
+          language: data.language ?? 'en',
+          theme: data.theme ?? 'light',
+          notifications: !!data.email_notifications,
+          betaOptIn: !!data.beta_features_opt_in,
+        });
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (loading) return <p className="p-6 text-gray-400">Loading settings...</p>;
 
   return (
     <div className="mx-auto max-w-3xl p-6 font-sans">
       <h1 className="mb-6 text-3xl font-semibold">Settings</h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* User */}
+        {/* User Profile */}
         <section>
           <h2 className="mb-4 text-xl font-semibold">User Profile</h2>
 
@@ -124,7 +192,7 @@ const SettingsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* User Preferences */}
+        {/* Preferences */}
         <section>
           <h2 className="mb-4 text-xl font-semibold">User Preferences</h2>
 
