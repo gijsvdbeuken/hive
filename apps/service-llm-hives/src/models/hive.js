@@ -5,9 +5,14 @@ const LLMHiveSchema = new mongoose.Schema({
   createdAt: { type: Date, required: true },
   updatedAt: { type: Date, required: true },
   large_language_models: {
-    model_1: { type: String, required: true },
-    model_2: { type: String, required: true },
-    model_3: { type: String, required: true },
+    type: [String],
+    validate: {
+      validator: function (v) {
+        return Array.isArray(v) && v.length >= 2;
+      },
+      message: 'A hive must contain at least 2 language models.',
+    },
+    required: true,
   },
 });
 

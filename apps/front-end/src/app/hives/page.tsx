@@ -18,64 +18,90 @@ const HivesPage = () => {
   const [newTitle, setNewTitle] = useState('');
   const [selectedLLMs, setSelectedLLMs] = useState<string[]>([]);
 
-  const deleteModel = (id: string) => {
-    setUserModels((prev) => prev.filter((model) => model.id !== id));
+  const deleteModel = async (id: string) => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/hives/auth0|6554d3ba6ac7eefb66a50028/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) throw new Error('Failed to delete hive');
+
+      setUserModels((prev) => prev.filter((model) => model.id !== id));
+    } catch (err) {
+      console.error('Error deleting hive:', err);
+    }
   };
 
   const toggleLLM = (llm: string) => {
     setSelectedLLMs((prev) => (prev.includes(llm) ? prev.filter((item) => item !== llm) : [...prev, llm]));
   };
 
-  const createModel = () => {
-    if (!newTitle || selectedLLMs.length === 0) return;
+  useEffect(() => {
+    const fetchUserModels = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/hives/auth0|6554d3ba6ac7eefb66a50028`);
+        if (!res.ok) throw new Error('Failed to fetch hives');
 
-    const id = `model-${Date.now()}`;
+        const data = await res.json();
+        setUserModels(data.hives || []);
+      } catch (err) {
+        console.error('Failed to load user hives:', err);
+      }
+    };
+
+    fetchUserModels();
+  }, []);
+
+  const createModel = async () => {
+    if (!newTitle || selectedLLMs.length < 2) {
+      console.warn('Please enter a title and select at least 2 language models.');
+      return;
+    }
+
+    const normalizedTitle = newTitle.trim().toLowerCase();
+    const duplicate = userModels.some((model) => model.title.trim().toLowerCase() === normalizedTitle);
+
+    if (duplicate) {
+      console.warn('A model with this title already exists.');
+      return;
+    }
+
+    const id = normalizedTitle.replace(/\s+/g, '-');
     const newModel: UserModel = {
       id,
       title: newTitle,
       models: selectedLLMs,
     };
 
-    setUserModels((prev) => [...prev, newModel]);
-    setActiveHive(newTitle);
-    setNewTitle('');
-    setSelectedLLMs([]);
-  };
+    try {
+      const ownerId = 'auth0|6554d3ba6ac7eefb66a50028';
 
-  useEffect(() => {
-    if (!activeHive) return;
+      const backendResponse = await fetch(`http://localhost:3001/api/hives`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ownerId,
+          hiveId: id,
+          largeLanguageModels: selectedLLMs,
+        }),
+      });
 
-    function generateUniqueId(length = 10) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      if (!backendResponse.ok) {
+        const error = await backendResponse.json();
+        console.error('Backend error:', error);
+        return;
       }
-      return result;
+
+      setUserModels((prev) => [...prev, newModel]);
+      setActiveHive(newTitle);
+      setNewTitle('');
+      setSelectedLLMs([]);
+    } catch (err) {
+      console.error('Error creating model:', err);
     }
-
-    const storeActiveHive = async () => {
-      try {
-        const ownerId = 'auth0|6554d3ba6ac7eefb66a50028';
-        const uniqueId = generateUniqueId();
-        const hiveId = `my-research-hive_${uniqueId}`;
-        const largeLanguageModels = ['GPT-4o', 'GPT-4o-mini', 'Claude 3.5 Sonnet'];
-
-        console.log('Throwing request to api-gateway...');
-        await fetch('http://localhost:3001/api/hives', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ownerId, hiveId, largeLanguageModels }),
-        });
-      } catch (error) {
-        console.error('Error fetching response:', error);
-      }
-    };
-
-    storeActiveHive();
-  }, [activeHive]);
+  };
 
   return (
     <div className="flex h-full flex-col items-center space-y-10 pb-20 font-albert text-white">
@@ -98,6 +124,7 @@ const HivesPage = () => {
             </div>
           ))}
         </div>
+        <p className="mb-4 text-sm text-white/60">Select at least 2 language models to create a hive</p>
 
         <button onClick={createModel} className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
           Create
