@@ -11,8 +11,9 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
 const ROUTING_MAP = {
-  '/chat': `http://localhost:${process.env.SERVICE_LLM_RESPONSES}`,
+  '/users': `http://localhost:${process.env.SERVICE_USER}`,
   '/hives': `http://localhost:${process.env.SERVICE_LLM_HIVES}`,
+  '/chat': `http://localhost:${process.env.SERVICE_LLM_RESPONSES}`,
 };
 
 const router = express.Router();
@@ -29,7 +30,6 @@ async function forwardRequest(req, res) {
   const fullUrl = `${targetService}/api${path}`;
 
   try {
-    console.log('Throwing request to service-llm-hives...');
     const response = await fetch(fullUrl, {
       method: req.method,
       headers: {

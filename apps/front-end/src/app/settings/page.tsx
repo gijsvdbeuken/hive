@@ -6,8 +6,8 @@ interface User {
   email: string;
   createdAt: string;
   username: string;
-  role: 'user' | 'admin' | 'beta_tester';
-  plan: 'free' | 'pro' | 'enterprise';
+  role: 'user' | 'admin' | 'beta_tester' | 'unknown';
+  plan: 'free' | 'pro' | 'enterprise' | 'unknown';
 }
 
 interface UserPreferences {
@@ -21,16 +21,16 @@ const SettingsPage: React.FC = () => {
   const [user, setUser] = useState<User>({
     auth0Id: 'auth0|6554d3ba6ac7eefb66a50028',
     email: 'gijs.vandenbeuken@gmail.com',
-    createdAt: '01-05-2025',
-    username: 'gijs.vdbeuken',
-    role: 'admin',
-    plan: 'free',
+    createdAt: 'unknown',
+    username: 'unknown',
+    role: 'unknown',
+    plan: 'unknown',
   });
 
   const [preferences, setPreferences] = useState<UserPreferences>({
     language: 'en',
     theme: 'light',
-    notifications: true,
+    notifications: false,
     betaOptIn: false,
   });
 
@@ -73,6 +73,7 @@ const SettingsPage: React.FC = () => {
       <h1 className="mb-6 text-3xl font-semibold">Settings</h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* User */}
         <section>
           <h2 className="mb-4 text-xl font-semibold">User Profile</h2>
 
