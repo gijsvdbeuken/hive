@@ -12,19 +12,41 @@ type UserModel = {
 
 const availableLLMs = ['GPT-4', 'GPT-4o', 'Claude 3.5 Sonnet', 'Claude 3 Opus', 'Gemini 1.5 Pro', 'GPT-4o-mini', 'GPT-3.5 Turbo'];
 
+const API_BASE = 'http://localhost:3001/api/hives';
+
 const HivesPage = () => {
   const session = useSession();
-  if (!session.user.sub || !session.user.email) {
-    return;
-  }
   const { activeHive, setActiveHive } = useAppContext();
+
   const [userModels, setUserModels] = useState<UserModel[]>([]);
   const [newTitle, setNewTitle] = useState('');
   const [selectedLLMs, setSelectedLLMs] = useState<string[]>([]);
 
-  const deleteModel = async (id: string) => {
+  useEffect(() => {
+    if (!session.user.sub) return;
+
+    const fetchUserModels = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/${session.user.sub}`);
+        if (!res.ok) throw new Error('Failed to fetch hives');
+
+        const data = await res.json();
+        setUserModels(data.hives || []);
+      } catch (err) {
+        console.error('Failed to load user hives:', err);
+      }
+    };
+
+    fetchUserModels();
+  }, [session.user.sub]);
+
+  const toggleLLM = (llm: string) => {
+    setSelectedLLMs((prev) => (prev.includes(llm) ? prev.filter((item) => item !== llm) : [...prev, llm]));
+  };
+
+  const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/hives/${session.user.sub}/${id}`, {
+      const res = await fetch(`${API_BASE}/${session.user.sub}/${id}`, {
         method: 'DELETE',
       });
 
@@ -36,67 +58,44 @@ const HivesPage = () => {
     }
   };
 
-  const toggleLLM = (llm: string) => {
-    setSelectedLLMs((prev) => (prev.includes(llm) ? prev.filter((item) => item !== llm) : [...prev, llm]));
-  };
-
-  useEffect(() => {
-    const fetchUserModels = async () => {
-      try {
-        const res = await fetch(`http://localhost:3001/api/hives/${session.user.sub}`);
-        if (!res.ok) throw new Error('Failed to fetch hives');
-
-        const data = await res.json();
-        setUserModels(data.hives || []);
-      } catch (err) {
-        console.error('Failed to load user hives:', err);
-      }
-    };
-
-    fetchUserModels();
-  }, []);
-
-  const createModel = async () => {
-    if (!newTitle || selectedLLMs.length < 2) {
+  const handleCreate = async () => {
+    if (!newTitle.trim() || selectedLLMs.length < 2) {
       console.warn('Please enter a title and select at least 2 language models.');
       return;
     }
 
     const normalizedTitle = newTitle.trim().toLowerCase();
-    const duplicate = userModels.some((model) => model.title.trim().toLowerCase() === normalizedTitle);
+    const exists = userModels.some((model) => model.title.trim().toLowerCase() === normalizedTitle);
 
-    if (duplicate) {
+    if (exists) {
       console.warn('A model with this title already exists.');
       return;
     }
 
     const id = normalizedTitle.replace(/\s+/g, '-');
-    const newModel: UserModel = {
-      id,
-      title: newTitle,
-      models: selectedLLMs,
-    };
 
     try {
-      const ownerId = session.user.sub;
-
-      const backendResponse = await fetch(`http://localhost:3001/api/hives`, {
+      const res = await fetch(API_BASE, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ownerId,
+          ownerId: session.user.sub,
           hiveId: id,
           largeLanguageModels: selectedLLMs,
         }),
       });
 
-      if (!backendResponse.ok) {
-        const error = await backendResponse.json();
+      if (!res.ok) {
+        const error = await res.json();
         console.error('Backend error:', error);
         return;
       }
+
+      const newModel: UserModel = {
+        id,
+        title: newTitle,
+        models: selectedLLMs,
+      };
 
       setUserModels((prev) => [...prev, newModel]);
       setActiveHive(newTitle);
@@ -107,32 +106,37 @@ const HivesPage = () => {
     }
   };
 
+  if (!session.user.sub || !session.user.email) return null;
+
   return (
     <div className="flex h-full flex-col items-center space-y-10 pb-20 font-albert text-white">
       {/* Getting Started */}
       <section className="mt-10 w-[800px] rounded-md">
         <h1 className="mb-4 text-[32px] font-bold">Getting Started with Hive</h1>
-        <div className="h-[200px] w-full rounded-md bg-white/5"></div>
+        <div className="h-[200px] w-full rounded-md bg-white/5" />
       </section>
 
       {/* Create Custom Model */}
       <section className="w-[800px] rounded-md bg-white/5 p-6">
         <h2 className="mb-4 text-[32px] font-bold">Create Custom Model</h2>
 
-        <input className="mb-4 w-full rounded bg-white/10 p-2 text-white placeholder-white/50 focus:outline-none" placeholder="Model collection name" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+        <input className="mb-4 w-full rounded bg-white/10 p-2 text-white placeholder-white/50 focus:outline-none" placeholder="Model collection name" value={newTitle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTitle(e.target.value)} />
 
         <div className="mb-4 flex flex-wrap gap-2">
           {availableLLMs.map((llm) => (
-            <div key={llm} onClick={() => toggleLLM(llm)} className={`cursor-pointer rounded-md border-[1.5px] p-3 text-sm transition-all ${selectedLLMs.includes(llm) ? 'border-white border-opacity-25 bg-white bg-opacity-5' : 'border-white border-opacity-10 bg-opacity-10 opacity-50 hover:opacity-100'}`}>
+            <label key={llm} className={`cursor-pointer rounded-md border-[1.5px] px-3 py-2 text-sm transition-all ${selectedLLMs.includes(llm) ? 'border-white border-opacity-25 bg-white bg-opacity-5' : 'border-white border-opacity-10 bg-opacity-10 opacity-50 hover:opacity-100'}`}>
+              <input type="checkbox" value={llm} checked={selectedLLMs.includes(llm)} onChange={(e: React.ChangeEvent<HTMLInputElement>) => toggleLLM(e.target.value)} className="mr-2 accent-blue-500" />
               {llm}
-            </div>
+            </label>
           ))}
         </div>
+
         <p className="mb-4 text-sm text-white/60">Select at least 2 language models to create a hive</p>
 
-        <button onClick={createModel} className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+        <button onClick={handleCreate} className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
           Create
         </button>
+
         <h2 className="mb-4 mt-10 text-[32px] font-bold">Your Models</h2>
         <div className="flex flex-wrap gap-4">
           {userModels.length > 0 ? (
@@ -143,7 +147,7 @@ const HivesPage = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteModel(model.id);
+                      handleDelete(model.id);
                     }}
                     className="rounded bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
                   >

@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import pool from '../db.js';
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ router.get('/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
 
   try {
-    const query = `
+    let query = `
       SELECT u.id, u.auth0_id, u.username, u.role, u.plan, u.created_at,
              up.language, up.theme, up.email_notifications, up.beta_features_opt_in, up.updated_at
       FROM users u
@@ -18,17 +19,31 @@ router.get('/:auth0_id', async (req, res) => {
       WHERE u.auth0_id = $1
       LIMIT 1
     `;
-
-    const { rows } = await pool.query(query, [auth0_id]);
+    let { rows } = await pool.query(query, [auth0_id]);
 
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      const newUserId = uuidv4();
+
+      await pool.query(
+        `INSERT INTO users (id, auth0_id, username, role, plan, created_at)
+         VALUES ($1, $2, '', 'user', 'free', NOW())`,
+        [newUserId, auth0_id],
+      );
+
+      await pool.query(
+        `INSERT INTO user_preferences (user_id, language, theme, email_notifications, beta_features_opt_in, updated_at)
+         VALUES ($1, 'en', 'light', false, false, NOW())`,
+        [newUserId],
+      );
+
+      const { rows: newRows } = await pool.query(query, [auth0_id]);
+      return res.status(201).json(newRows[0]);
     }
 
-    res.json(rows[0]);
+    return res.json(rows[0]);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error fetching/creating user:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -46,14 +61,12 @@ router.put('/:auth0_id', async (req, res) => {
   try {
     await client.query('BEGIN');
 
-    // Update user table if username is provided
     if (username !== undefined) {
       console.log('Updating username to:', username);
       const userUpdateResult = await client.query('UPDATE users SET username = $1 WHERE auth0_id = $2 RETURNING *', [username, auth0_id]);
       console.log('User update result:', userUpdateResult.rows);
     }
 
-    // Update user_preferences table
     const updatePrefsQuery = `
       UPDATE user_preferences up
       SET language = $1,
