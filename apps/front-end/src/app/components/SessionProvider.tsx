@@ -2,7 +2,7 @@
 import { createContext, useContext, ReactNode } from 'react';
 
 interface SessionContextType {
-  session: any; // Replace with your session type
+  session: any;
 }
 
 const SessionContext = createContext<SessionContextType | null>(null);

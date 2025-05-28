@@ -7,8 +7,8 @@ interface User {
   email: string;
   createdAt: string;
   username: string;
-  role: 'user' | 'admin' | 'beta_tester' | 'unknown';
-  plan: 'free' | 'pro' | 'enterprise' | 'unknown';
+  role: string;
+  plan: string;
 }
 
 interface UserPreferences {
@@ -20,20 +20,22 @@ interface UserPreferences {
 
 const SettingsPage: React.FC = () => {
   const session = useSession();
-  console.log('SESSION IS: ' + session.user.sub);
+  if (!session.user.sub || !session.user.email) {
+    return;
+  }
 
   const [user, setUser] = useState<User>({
-    auth0Id: 'auth0|6554d3ba6ac7eefb66a50028',
-    email: 'gijs.vandenbeuken@gmail.com',
+    auth0Id: session.user.sub,
+    email: session.user.email,
     createdAt: '',
     username: '',
-    role: 'unknown',
-    plan: 'free',
+    role: '',
+    plan: '',
   });
 
   const [preferences, setPreferences] = useState<UserPreferences>({
     language: 'en',
-    theme: 'light',
+    theme: 'dark',
     notifications: false,
     betaOptIn: false,
   });
@@ -69,7 +71,7 @@ const SettingsPage: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:3001/api/users/auth0|6554d3ba6ac7eefb66a50028`, {
+      const response = await fetch(`http://localhost:3001/api/users/${session.user.sub}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -110,17 +112,17 @@ const SettingsPage: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/users/auth0|6554d3ba6ac7eefb66a50028');
+        const res = await fetch(`http://localhost:3001/api/users/${session.user.sub}`);
         if (!res.ok) throw new Error('Failed to fetch user data');
         const data = await res.json();
 
         setUser({
-          auth0Id: data.auth0_id ?? 'auth0|6554d3ba6ac7eefb66a50028',
-          email: data.email ?? 'gijs.vandenbeuken@gmail.com',
+          auth0Id: data.auth0_id ?? session.user.sub,
+          email: data.email ?? session.user.email,
           createdAt: data.created_at ?? '',
           username: data.username ?? '',
-          role: data.role ?? 'unknown',
-          plan: data.plan ?? 'free',
+          role: data.role ?? '',
+          plan: data.plan ?? '',
         });
 
         setPreferences({

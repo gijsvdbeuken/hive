@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import HiveBlock from './components/HiveBlock';
 import { useAppContext } from '../context/activeHiveContext';
+import { useSession } from '../components/SessionProvider';
 
 type UserModel = {
   id: string;
@@ -12,15 +13,18 @@ type UserModel = {
 const availableLLMs = ['GPT-4', 'GPT-4o', 'Claude 3.5 Sonnet', 'Claude 3 Opus', 'Gemini 1.5 Pro', 'GPT-4o-mini', 'GPT-3.5 Turbo'];
 
 const HivesPage = () => {
+  const session = useSession();
+  if (!session.user.sub || !session.user.email) {
+    return;
+  }
   const { activeHive, setActiveHive } = useAppContext();
-
   const [userModels, setUserModels] = useState<UserModel[]>([]);
   const [newTitle, setNewTitle] = useState('');
   const [selectedLLMs, setSelectedLLMs] = useState<string[]>([]);
 
   const deleteModel = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/hives/auth0|6554d3ba6ac7eefb66a50028/${id}`, {
+      const res = await fetch(`http://localhost:3001/api/hives/${session.user.sub}/${id}`, {
         method: 'DELETE',
       });
 
@@ -39,7 +43,7 @@ const HivesPage = () => {
   useEffect(() => {
     const fetchUserModels = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/hives/auth0|6554d3ba6ac7eefb66a50028`);
+        const res = await fetch(`http://localhost:3001/api/hives/${session.user.sub}`);
         if (!res.ok) throw new Error('Failed to fetch hives');
 
         const data = await res.json();
@@ -74,7 +78,7 @@ const HivesPage = () => {
     };
 
     try {
-      const ownerId = 'auth0|6554d3ba6ac7eefb66a50028';
+      const ownerId = session.user.sub;
 
       const backendResponse = await fetch(`http://localhost:3001/api/hives`, {
         method: 'POST',
