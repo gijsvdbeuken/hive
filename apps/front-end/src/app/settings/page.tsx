@@ -71,6 +71,7 @@ const SettingsPage: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          username: user.username,
           language: preferences.language,
           theme: preferences.theme,
           email_notifications: preferences.notifications,

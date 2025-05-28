@@ -34,10 +34,27 @@ router.get('/:auth0_id', async (req, res) => {
 
 router.put('/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
-  const { language, theme, email_notifications, beta_features_opt_in } = req.body;
+  const { username, language, theme, email_notifications, beta_features_opt_in } = req.body;
+
+  console.log('PUT request received:');
+  console.log('auth0_id:', auth0_id);
+  console.log('Request body:', req.body);
+  console.log('Username from body:', username);
+
+  const client = await pool.connect();
 
   try {
-    const updateQuery = `
+    await client.query('BEGIN');
+
+    // Update user table if username is provided
+    if (username !== undefined) {
+      console.log('Updating username to:', username);
+      const userUpdateResult = await client.query('UPDATE users SET username = $1 WHERE auth0_id = $2 RETURNING *', [username, auth0_id]);
+      console.log('User update result:', userUpdateResult.rows);
+    }
+
+    // Update user_preferences table
+    const updatePrefsQuery = `
       UPDATE user_preferences up
       SET language = $1,
           theme = $2,
@@ -49,17 +66,21 @@ router.put('/:auth0_id', async (req, res) => {
       RETURNING up.*
     `;
 
-    const updateValues = [language, theme, email_notifications, beta_features_opt_in, auth0_id];
-    const { rows } = await pool.query(updateQuery, updateValues);
+    const { rows } = await client.query(updatePrefsQuery, [language, theme, email_notifications, beta_features_opt_in, auth0_id]);
 
     if (rows.length === 0) {
+      await client.query('ROLLBACK');
       return res.status(404).json({ error: 'User preferences not found' });
     }
 
+    await client.query('COMMIT');
     res.json(rows[0]);
   } catch (error) {
-    console.error('Error updating user preferences:', error);
+    await client.query('ROLLBACK');
+    console.error('Error updating user data:', error);
     res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    client.release();
   }
 });
 
