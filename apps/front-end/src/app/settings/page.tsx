@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useSession } from '../components/SessionProvider';
 
 interface User {
   auth0Id: string;
@@ -18,6 +19,9 @@ interface UserPreferences {
 }
 
 const SettingsPage: React.FC = () => {
+  const session = useSession();
+  console.log('SESSION IS: ' + session.user.sub);
+
   const [user, setUser] = useState<User>({
     auth0Id: 'auth0|6554d3ba6ac7eefb66a50028',
     email: 'gijs.vandenbeuken@gmail.com',
