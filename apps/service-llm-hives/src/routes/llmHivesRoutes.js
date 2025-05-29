@@ -141,17 +141,15 @@ router.delete('/:ownerId', async (req, res) => {
     if (!ownerId) {
       return res.status(400).json({ error: 'Missing ownerId' });
     }
-
-    const result = await Hives.deleteOne({ ownerId });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'No user data found for this ownerId' });
-    }
-
-    return res.status(200).json({ message: 'All user hives deleted successfully' });
+    const result = await Hives.deleteMany({ ownerId });
+    console.log(`Deleted ${result.deletedCount} hives for ownerId: ${ownerId}`);
+    return res.status(200).json({
+      message: 'Successfully processed hive deletion. User data (if any) removed.',
+      deletedCount: result.deletedCount,
+    });
   } catch (err) {
-    console.error('Error deleting all hives for user:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Error deleting hives for user:', err);
+    return res.status(500).json({ error: 'Internal server error during hive deletion' });
   }
 });
 
