@@ -121,6 +121,27 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!userId) return;
+    const confirmed = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
+    if (!confirmed) return;
+    try {
+      console.log('Deleting user with ID:', userId);
+      const res = await fetch(`http://localhost:3001/api/users/${userId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to delete account');
+      }
+      window.location.href = '/auth/logout';
+      return;
+    } catch (err: any) {
+      console.error('Account deletion error:', err);
+      setErrorMsg(err.message || 'Account deletion failed');
+    }
+  };
+
   if (!userId || !userEmail) return <p className="p-6 text-red-400">User not authenticated.</p>;
   if (loading) return <p className="p-6 text-gray-400">Loading settings...</p>;
   if (!user) return <p className="p-6 text-red-400">Failed to load user.</p>;
@@ -207,6 +228,12 @@ const SettingsPage: React.FC = () => {
           Save Changes
         </button>
       </form>
+      <div className="mt-12 border-t border-white/10 pt-6">
+        <h2 className="mb-4 text-xl font-semibold text-red-600">Danger Zone</h2>
+        <button type="button" onClick={handleDeleteAccount} className="rounded-md bg-red-600 px-6 py-2 text-white transition hover:bg-red-700">
+          Delete My Account
+        </button>
+      </div>
     </div>
   );
 };

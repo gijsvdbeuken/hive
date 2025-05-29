@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { deleteAuth0User } from '../utils/auth0-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +53,40 @@ async function forwardRequest(req, res) {
     });
   }
 }
+
+router.delete('/users/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // 1. Delete user data from user microservice
+    const userRes = await fetch(`http://localhost:${process.env.SERVICE_USER}/api/users/${userId}`, {
+      method: 'DELETE',
+    });
+
+    if (!userRes.ok) {
+      const error = await userRes.json();
+      return res.status(userRes.status).json(error);
+    }
+
+    // 2. Delete user hives data from hives microservice
+    const hivesRes = await fetch(`http://localhost:${process.env.SERVICE_LLM_HIVES}/api/hives/${userId}`, {
+      method: 'DELETE',
+    });
+
+    if (!hivesRes.ok) {
+      const error = await hivesRes.json();
+      return res.status(hivesRes.status).json(error);
+    }
+
+    // 3. Delete user from Auth0
+    await deleteAuth0User(userId);
+
+    return res.status(200).json({ message: 'User and all related data deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return res.status(500).json({ error: 'Failed to delete user', details: error.message });
+  }
+});
 
 router.use(async (req, res) => {
   await forwardRequest(req, res);

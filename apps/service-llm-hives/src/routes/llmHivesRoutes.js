@@ -21,10 +21,9 @@ router.get('/:ownerId', async (req, res) => {
       return res.status(200).json({ hives: [] });
     }
 
-    // Format data for the frontend
     const formattedHives = userDoc.hives.map((hive) => ({
       id: hive.id,
-      title: hive.id, // Assuming `id` is used as title — adjust if needed
+      title: hive.id,
       models: Array.isArray(hive.large_language_models) ? hive.large_language_models.filter(Boolean) : [],
     }));
 
@@ -46,20 +45,16 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Missing or invalid fields' });
     }
 
-    // Filter out empty/falsy values
     const filteredModels = largeLanguageModels.filter(Boolean);
 
-    // Check if we have at least 2 models (required by schema)
     if (filteredModels.length < 2) {
       return res.status(400).json({ error: 'A hive must contain at least 2 language models' });
     }
 
-    // Try to find existing document for this user
     let userDoc = await Hives.findOne({ ownerId });
 
     const now = new Date();
 
-    // Create new hive object
     const newHive = {
       id: hiveId,
       createdAt: now,
@@ -68,7 +63,6 @@ router.post('/', async (req, res) => {
     };
 
     if (!userDoc) {
-      // No doc yet - create new
       userDoc = new Hives({
         ownerId,
         createdAt: now,
@@ -77,13 +71,10 @@ router.post('/', async (req, res) => {
         schemaVersion: 1,
       });
     } else {
-      // Check for duplicate hive IDs
       const existingHive = userDoc.hives.find((hive) => hive.id === hiveId);
       if (existingHive) {
         return res.status(400).json({ error: 'A hive with this ID already exists' });
       }
-
-      // Append new hive
       userDoc.hives.push(newHive);
       userDoc.updatedAt = now;
     }
@@ -100,8 +91,6 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Error saving hive:', error);
-
-    // Handle mongoose validation errors specifically
     if (error.name === 'ValidationError') {
       return res.status(400).json({
         error: 'Validation failed',
@@ -113,7 +102,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Delete a specific hive by ownerId and hiveId
 router.delete('/:ownerId/:hiveId', async (req, res) => {
   try {
     const { ownerId, hiveId } = req.params;
@@ -142,6 +130,27 @@ router.delete('/:ownerId/:hiveId', async (req, res) => {
     return res.status(200).json({ message: 'Hive deleted successfully' });
   } catch (err) {
     console.error('Error deleting hive:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.delete('/:ownerId', async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+
+    if (!ownerId) {
+      return res.status(400).json({ error: 'Missing ownerId' });
+    }
+
+    const result = await Hives.deleteOne({ ownerId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'No user data found for this ownerId' });
+    }
+
+    return res.status(200).json({ message: 'All user hives deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting all hives for user:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });

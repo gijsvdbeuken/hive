@@ -9,6 +9,9 @@ const router = express.Router();
 
 router.get('/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
+  console.log('GET request for auth0_id:', auth0_id);
+  console.log('Request headers:', req.headers);
+  console.log('Referer:', req.get('Referer'));
 
   try {
     let query = `
@@ -92,6 +95,39 @@ router.put('/:auth0_id', async (req, res) => {
     await client.query('ROLLBACK');
     console.error('Error updating user data:', error);
     res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    client.release();
+  }
+});
+
+router.delete('/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  console.log('DELETE request received for auth0_id:', auth0_id);
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const userResult = await client.query('SELECT id FROM users WHERE auth0_id = $1', [auth0_id]);
+
+    if (userResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userId = userResult.rows[0].id;
+
+    await client.query('DELETE FROM user_preferences WHERE user_id = $1', [userId]);
+
+    await client.query('DELETE FROM users WHERE id = $1', [userId]);
+
+    await client.query('COMMIT');
+    return res.status(200).json({ success: true, message: 'User account deleted successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error deleting user:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   } finally {
     client.release();
   }
