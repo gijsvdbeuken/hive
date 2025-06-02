@@ -43,3 +43,6 @@ next-env.d.ts
 # kubernetes secrets
 /k8s/pg-secret.yaml
 /k8s/auth0-secret.yaml
+
+# config secrets
+/config.yaml
