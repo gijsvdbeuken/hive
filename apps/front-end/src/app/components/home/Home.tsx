@@ -5,6 +5,14 @@ import Question from './Question';
 import Answer from './Answer';
 import Questionbar from './Questionbar';
 import { useActiveChatContext } from '../../context/activeChatContext';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 type CustomSession = {
   user: {
@@ -33,7 +41,7 @@ export default function ClientHome({ session }: { session: CustomSession | null 
   async function handleSubmit(message: string) {
     addMessage(message);
     try {
-      const res = await fetch('http://localhost:3001/api/chat/openai', {
+      const res = await fetch(`${process.env.API_GATEWAY}/api/chat/openai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),

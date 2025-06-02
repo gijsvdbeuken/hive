@@ -1,6 +1,14 @@
 'use client';
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useSession } from '../components/SessionProvider';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 interface User {
   auth0Id: string;
@@ -41,7 +49,7 @@ const SettingsPage: React.FC = () => {
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/users/${userId}`);
+        const res = await fetch(`${process.env.API_GATEWAY}/api/users/${userId}`);
         if (!res.ok) throw new Error('Failed to fetch user data');
         const data = await res.json();
 
@@ -94,7 +102,7 @@ const SettingsPage: React.FC = () => {
       setErrorMsg(null);
       setSuccessMsg(null);
 
-      const res = await fetch(`http://localhost:3001/api/users/${userId}`, {
+      const res = await fetch(`${process.env.API_GATEWAY}/api/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -137,7 +145,7 @@ const SettingsPage: React.FC = () => {
     if (!confirmed) return;
     try {
       console.log('Deleting user with ID:', userId);
-      const res = await fetch(`http://localhost:3001/api/users/${userId}`, {
+      const res = await fetch(`${process.env.API_GATEWAY}/api/users/${userId}`, {
         method: 'DELETE',
       });
       if (!res.ok) {
