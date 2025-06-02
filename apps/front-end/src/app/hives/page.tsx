@@ -23,11 +23,11 @@ const HivesPage = () => {
   const [selectedLLMs, setSelectedLLMs] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!session.user.sub) return;
+    if (!session?.user?.sub) return;
 
     const fetchUserModels = async () => {
       try {
-        const res = await fetch(`${API_BASE}/${session.user.sub}`);
+        const res = await fetch(`${API_BASE}/${session?.user?.sub}`);
         if (!res.ok) throw new Error('Failed to fetch hives');
 
         const data = await res.json();
@@ -38,7 +38,7 @@ const HivesPage = () => {
     };
 
     fetchUserModels();
-  }, [session.user.sub]);
+  }, [session?.user?.sub]);
 
   const toggleLLM = (llm: string) => {
     setSelectedLLMs((prev) => (prev.includes(llm) ? prev.filter((item) => item !== llm) : [...prev, llm]));
@@ -46,7 +46,7 @@ const HivesPage = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/${session.user.sub}/${id}`, {
+      const res = await fetch(`${API_BASE}/${session?.user?.sub}/${id}`, {
         method: 'DELETE',
       });
 
@@ -79,7 +79,7 @@ const HivesPage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ownerId: session.user.sub,
+          ownerId: session?.user?.sub,
           hiveId: id,
           largeLanguageModels: selectedLLMs,
         }),
@@ -106,7 +106,7 @@ const HivesPage = () => {
     }
   };
 
-  if (!session.user.sub || !session.user.email) return null;
+  if (!session?.user?.sub || !session?.user?.sub) return null;
 
   return (
     <div className="flex h-full flex-col items-center space-y-10 pb-20 font-albert text-white">
