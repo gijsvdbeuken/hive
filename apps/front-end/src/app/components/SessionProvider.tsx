@@ -2,12 +2,12 @@
 import { createContext, useContext, ReactNode } from 'react';
 
 interface SessionContextType {
-  session: any;
+  session: unknown;
 }
 
 const SessionContext = createContext<SessionContextType | null>(null);
 
-export function SessionProvider({ session, children }: { session: any; children: ReactNode }) {
+export function SessionProvider({ session, children }: { session: unknown; children: ReactNode }) {
   return <SessionContext.Provider value={{ session }}>{children}</SessionContext.Provider>;
 }
 

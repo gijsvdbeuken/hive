@@ -60,10 +60,14 @@ const SettingsPage: React.FC = () => {
           notifications: !!data.email_notifications,
           betaOptIn: !!data.beta_features_opt_in,
         });
-      } catch (err: any) {
-        setErrorMsg(err.message || 'Unexpected error');
-      } finally {
-        setLoading(false);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setErrorMsg(err.message);
+        } else if (typeof err === 'string') {
+          setErrorMsg(err);
+        } else {
+          setErrorMsg('Unexpected error');
+        }
       }
     };
 
@@ -116,8 +120,14 @@ const SettingsPage: React.FC = () => {
       });
 
       setSuccessMsg('Preferences updated successfully!');
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to update');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMsg(err.message);
+      } else if (typeof err === 'string') {
+        setErrorMsg(err);
+      } else {
+        setErrorMsg('Unexpected error');
+      }
     }
   };
 
@@ -136,9 +146,14 @@ const SettingsPage: React.FC = () => {
       }
       window.location.href = '/auth/logout';
       return;
-    } catch (err: any) {
-      console.error('Account deletion error:', err);
-      setErrorMsg(err.message || 'Account deletion failed');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMsg(err.message);
+      } else if (typeof err === 'string') {
+        setErrorMsg(err);
+      } else {
+        setErrorMsg('Unexpected error');
+      }
     }
   };
 
