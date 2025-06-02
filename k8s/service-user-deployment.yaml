@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-user
+  template:
+    metadata:
+      labels:
+        app: service-user
+    spec:
+      imagePullSecrets:
+        - name: do-registry
+      containers:
+        - name: service-user
+          image: registry.digitalocean.com/hive-services-registry/service-user:latest
+          ports:
+            - containerPort: 3002
+          env:
+            - name: SERVICE_USER
+              value: '3002'
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: PG_USER
+            - name: PG_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: PG_HOST
+            - name: PG_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: PG_DATABASE
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: PG_PASSWORD
+            - name: PG_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: PG_PORT

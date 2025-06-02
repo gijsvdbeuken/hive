@@ -14,8 +14,7 @@ RUN npm install
 COPY ./src ./src
 
 # Expose the port your Express app runs on
-EXPOSE 3001
+EXPOSE 3002
 
 # Define the command to run the app
 CMD ["node", "src/server.js"]
-
