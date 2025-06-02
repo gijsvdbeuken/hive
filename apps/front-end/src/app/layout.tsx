@@ -28,7 +28,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth0.getSession();
+  const auth0Session = await auth0.getSession();
+  const session = {
+    user: auth0Session?.user
+      ? {
+          sub: auth0Session.user.sub,
+          email: auth0Session.user.email,
+        }
+      : undefined,
+  };
 
   return (
     <html lang="en">
