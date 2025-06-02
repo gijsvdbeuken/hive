@@ -14,9 +14,10 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 connectDB();
 
 const app = express();
-const port = process.env.SERVICE_LLM_HIVES || null;
+const baseUrl = process.env.SERVICE_LLM_HIVES || null;
+const port = new URL(baseUrl).port || 3003;
 
-if (!port) {
+if (!baseUrl) {
   console.error('Error: The server port was not found in the environment variables.');
   process.exit(1);
 }
@@ -24,12 +25,12 @@ if (!port) {
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: baseUrl,
     credentials: true,
   }),
 );
 app.use('/api/hives', llmHivesRoutes);
 
 app.listen(port, () => {
-  console.log(`service-llm-hives running at http://localhost:${port}`);
+  console.log(`service-llm-hives running at ${baseUrl}`);
 });

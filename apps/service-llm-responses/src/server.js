@@ -11,9 +11,10 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const port = process.env.SERVICE_LLM_RESPONSES || null;
+const baseUrl = process.env.SERVICE_LLM_RESPONSES || null;
+const port = new URL(baseUrl).port || 3004;
 
-if (!port) {
+if (!baseUrl) {
   console.error('Error: The server port was not found in the environment variables.');
   process.exit(1);
 }
@@ -21,12 +22,12 @@ if (!port) {
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: baseUrl,
     credentials: true,
   }),
 );
 app.use('/api/chat', llmResponsesRoutes);
 
 app.listen(port, () => {
-  console.log(`service-llm-responses running at http://localhost:${port}`);
+  console.log(`service-llm-responses running at ${baseUrl}`);
 });

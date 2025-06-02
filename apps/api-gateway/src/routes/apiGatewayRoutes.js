@@ -12,9 +12,9 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
 const ROUTING_MAP = {
-  '/users': `http://localhost:${process.env.SERVICE_USER}`,
-  '/hives': `http://localhost:${process.env.SERVICE_LLM_HIVES}`,
-  '/chat': `http://localhost:${process.env.SERVICE_LLM_RESPONSES}`,
+  '/users': `${process.env.SERVICE_USER}`,
+  '/hives': `${process.env.SERVICE_LLM_HIVES}`,
+  '/chat': `${process.env.SERVICE_LLM_RESPONSES}`,
 };
 
 const router = express.Router();
@@ -59,7 +59,7 @@ router.delete('/users/:userId', async (req, res) => {
 
   try {
     // 1. Delete user data from user microservice
-    const userRes = await fetch(`http://localhost:${process.env.SERVICE_USER}/api/users/${userId}`, {
+    const userRes = await fetch(`${process.env.SERVICE_USER}/api/users/${userId}`, {
       method: 'DELETE',
     });
 
@@ -69,7 +69,7 @@ router.delete('/users/:userId', async (req, res) => {
     }
 
     // 2. Delete user hives data from hives microservice
-    const hivesRes = await fetch(`http://localhost:${process.env.SERVICE_LLM_HIVES}/api/hives/${userId}`, {
+    const hivesRes = await fetch(`${process.env.SERVICE_LLM_HIVES}/api/hives/${userId}`, {
       method: 'DELETE',
     });
 

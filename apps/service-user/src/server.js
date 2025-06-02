@@ -14,9 +14,10 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 await connectDB();
 
 const app = express();
-const port = process.env.SERVICE_USER;
+const baseUrl = process.env.SERVICE_USER;
+const port = new URL(baseUrl).port || 3002;
 
-if (!port) {
+if (!baseUrl) {
   console.error('Error: The server port was not found in the environment variables.');
   process.exit(1);
 }
@@ -24,7 +25,7 @@ if (!port) {
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: baseUrl,
     credentials: true,
   }),
 );
@@ -32,5 +33,5 @@ app.use(
 app.use('/api/users', userRoutes);
 
 app.listen(port, () => {
-  console.log(`service-user running at http://localhost:${port}`);
+  console.log(`service-user running at ${baseUrl}`);
 });
