@@ -32,7 +32,7 @@ const SettingsPage: React.FC = () => {
     notifications: false,
     betaOptIn: false,
   });
-  let loading = true;
+  const loading = true;
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
