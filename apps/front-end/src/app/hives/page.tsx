@@ -3,14 +3,6 @@ import React, { useEffect, useState } from 'react';
 import HiveBlock from './components/HiveBlock';
 import { useAppContext } from '../context/activeHiveContext';
 import { useSession } from '../components/SessionProvider';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 type UserModel = {
   id: string;
@@ -20,7 +12,7 @@ type UserModel = {
 
 const availableLLMs = ['GPT-4', 'GPT-4o', 'Claude 3.5 Sonnet', 'Claude 3 Opus', 'Gemini 1.5 Pro', 'GPT-4o-mini', 'GPT-3.5 Turbo'];
 
-const API_BASE = `${process.env.API_GATEWAY}/api/hives`;
+const API_BASE = `${process.env.NEXT_PUBLIC_API_GATEWAY}/api/hives`;
 
 const HivesPage = () => {
   const session = useSession();
