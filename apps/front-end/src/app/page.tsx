@@ -1,4 +1,4 @@
-// app/page.tsx or app/home/page.tsx
+// app/page.tsx
 import { auth0 } from '@/lib/auth0';
 import HomePage from './components/home/Home';
 
