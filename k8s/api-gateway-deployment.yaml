@@ -22,7 +22,7 @@ spec:
           env:
             - name: FRONT_END
               value: 'https://hive-front-end.vercel.app/'
-            - name: SERVICE_API_GATEWAY
+            - name: API_GATEWAY
               value: 'http://api-gateway:3001'
             - name: SERVICE_USER
               value: 'http://service-user:3002'
