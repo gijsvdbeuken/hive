@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import pool from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
+import { publishUserDeleted } from '../utils/rabbitmq.js';
 
 dotenv.config();
 
@@ -123,6 +124,8 @@ router.delete('/:auth0_id', async (req, res) => {
     await client.query('DELETE FROM users WHERE id = $1', [userId]);
 
     await client.query('COMMIT');
+
+    publishUserDeleted(auth0_id);
     return res.status(200).json({ success: true, message: 'User account deleted successfully.' });
   } catch (error) {
     await client.query('ROLLBACK');

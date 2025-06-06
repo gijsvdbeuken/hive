@@ -5,6 +5,9 @@ import userRoutes from './routes/userRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectDB } from './db.js';
+import { connectRabbitMQ } from './utils/rabbitmq.js';
+
+connectRabbitMQ().catch(console.error);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
