@@ -1,10 +1,25 @@
-// utils/rabbitmq.js
 import amqp from 'amqplib';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { deleteHivesByOwner } from './hiveActions.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+let channel;
+
 export async function startRabbitMQConsumer() {
-  const connection = await amqp.connect('amqp://localhost:5672');
-  const channel = await connection.createChannel();
+  const host = process.env.RABBITMQ_HOST || 'localhost';
+  const port = process.env.RABBITMQ_PORT || '5672';
+  const user = process.env.RABBITMQ_USER || 'guest';
+  const pass = process.env.RABBITMQ_PASS || 'guest';
+
+  const connectionString = `amqp://${user}:${pass}@${host}:${port}`;
+
+  const connection = await amqp.connect(connectionString);
+  channel = await connection.createChannel();
 
   await channel.assertExchange('user.events', 'fanout', { durable: false });
 
