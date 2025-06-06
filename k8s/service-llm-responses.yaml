@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: service-llm-responses
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: service-llm-responses
   ports:

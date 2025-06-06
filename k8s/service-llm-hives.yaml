@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: service-llm-hives
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: service-llm-hives
   ports:

@@ -31,4 +31,4 @@ spec:
                   name: openai-secret
                   key: api-key
             - name: SERVICE_LLM_RESPONSES
-              value: '3004'
+              value: 'http://service-llm-responses:3004'
