@@ -10,6 +10,8 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 let channel;
 
+// test
+
 export async function startRabbitMQConsumer() {
   let connectionString;
   if (process.env.NODE_ENV === 'development') {
