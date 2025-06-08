@@ -11,13 +11,17 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 let channel;
 
 export async function startRabbitMQConsumer() {
-  const host = process.env.RABBITMQ_HOST || 'localhost';
-  const port = process.env.RABBITMQ_PORT || '5672';
-  const user = process.env.RABBITMQ_USER || 'guest';
-  const pass = process.env.RABBITMQ_PASS || 'guest';
+  let connectionString;
+  if (process.env.NODE_ENV === 'development') {
+    connectionString = 'amqp://guest:guest@localhost:5672';
+  } else {
+    const host = process.env.RABBITMQ_HOST || 'localhost';
+    const port = process.env.RABBITMQ_PORT || '5672';
+    const user = process.env.RABBITMQ_USER || 'guest';
+    const pass = process.env.RABBITMQ_PASS || 'guest';
 
-  const connectionString = `amqp://${user}:${pass}@${host}:${port}`;
-
+    connectionString = `amqp://${user}:${pass}@${host}:${port}`;
+  }
   const connection = await amqp.connect(connectionString);
   channel = await connection.createChannel();
 
