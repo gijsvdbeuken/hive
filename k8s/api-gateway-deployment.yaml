@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-gateway
+  namespace: default
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: api-gateway
@@ -23,7 +24,7 @@ spec:
             - name: FRONT_END
               value: 'https://hive-front-end.vercel.app/'
             - name: API_GATEWAY
-              value: 'http://api-gateway:3001'
+              value: 'https://api.hive-app.nl'
             - name: SERVICE_USER
               value: 'http://service-user:3002'
             - name: SERVICE_LLM_HIVES
