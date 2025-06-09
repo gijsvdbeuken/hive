@@ -63,7 +63,7 @@ jobs:
           sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-responses:.*|registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}|g" ./k8s/service-llm-responses-deployment.yaml
 
       - name: Apply Kubernetes manifests
-        run: kubectl apply -f ./k8s
+        run: kubectl apply -f ./k8s --validate=false
 
       - name: Rollout restart deployments
         run: |
