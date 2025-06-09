@@ -53,7 +53,9 @@ jobs:
       - name: Configure kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
 
       - name: Update Kubernetes manifests with new image tags
         run: |
@@ -63,6 +65,8 @@ jobs:
           sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-responses:.*|registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}|g" ./k8s/service-llm-responses-deployment.yaml
 
       - name: Apply Kubernetes manifests
+        env:
+          KUBECONFIG: $HOME/.kube/config
         run: kubectl apply -f ./k8s --validate=false
 
       - name: Rollout restart deployments
