@@ -50,18 +50,18 @@ jobs:
         with:
           version: 'latest'
 
-      - name: Debug KUBE_CONFIG
+      - name: Debug KUBE_CONFIG details
         run: |
-          echo "KUBE_CONFIG length: ${#KUBE_CONFIG}"
-          echo "First 50 characters: ${KUBE_CONFIG:0:50}"
-          echo "Last 50 characters: ${KUBE_CONFIG: -50}"
+          echo "$KUBE_CONFIG" | wc -c
+          echo "$KUBE_CONFIG" | tail -c 10 | od -c
+          echo "$KUBE_CONFIG" | head -c 10 | od -c
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 
       - name: Configure kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
+          echo "$KUBE_CONFIG" | tr -d '\n\r ' | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
           export KUBECONFIG=$HOME/.kube/config
         env:
