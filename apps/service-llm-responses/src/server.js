@@ -12,7 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const baseUrl = process.env.SERVICE_LLM_RESPONSES || null;
-const port = new URL(baseUrl).port || 3004;
+const port = process.env.PORT || 3004;
 
 if (!baseUrl) {
   console.error('Error: The server port was not found in the environment variables.');

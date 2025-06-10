@@ -32,3 +32,5 @@ spec:
                   key: api-key
             - name: SERVICE_LLM_RESPONSES
               value: 'http://service-llm-responses:3004'
+            - name: PORT
+              value: '3004'
