@@ -50,20 +50,13 @@ jobs:
         with:
           version: 'latest'
 
-      - name: Debug KUBE_CONFIG details
-        run: |
-          echo "$KUBE_CONFIG" | wc -c
-          echo "$KUBE_CONFIG" | tail -c 10 | od -c
-          echo "$KUBE_CONFIG" | head -c 10 | od -c
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-
-      - name: Configure kubeconfig (alternative)
+      - name: Configure kubeconfig and deploy
         run: |
           mkdir -p $HOME/.kube
-          echo -n "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
+          echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
           export KUBECONFIG=$HOME/.kube/config
+          kubectl apply -f ./k8s --validate=false
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 
@@ -74,20 +67,18 @@ jobs:
           sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-hives:.*|registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }}|g" ./k8s/service-llm-hives-deployment.yaml
           sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-responses:.*|registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}|g" ./k8s/service-llm-responses-deployment.yaml
 
-      - name: Apply Kubernetes manifests
-        env:
-          KUBECONFIG: $HOME/.kube/config
-        run: kubectl apply -f ./k8s --validate=false
-
       - name: Rollout restart deployments
         run: |
+          export KUBECONFIG=$HOME/.kube/config
           kubectl rollout restart deployment api-gateway
           kubectl rollout restart deployment service-user
           kubectl rollout restart deployment service-llm-hives
           kubectl rollout restart deployment service-llm-responses
 
       - name: Verify pods status
-        run: kubectl get pods
+        run: |
+          export KUBECONFIG=$HOME/.kube/config
+          kubectl get pods
 
       - name: Build and push K6 load test image
         run: |
