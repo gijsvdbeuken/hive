@@ -16,7 +16,7 @@ spec:
         - name: do-registry
       containers:
         - name: service-user
-          image: registry.digitalocean.com/hive-services-registry/service-user:latest
+          image: registry.digitalocean.com/hive-services-registry/service-user:REPLACE_WITH_SHA
           ports:
             - containerPort: 3002
           env:

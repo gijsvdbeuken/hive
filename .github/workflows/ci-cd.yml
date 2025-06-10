@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -23,6 +24,7 @@ jobs:
       - name: Run unit tests
         run: npm test
         working-directory: ./apps/front-end
+
   build-and-deploy:
     needs: test
     runs-on: ubuntu-latest
@@ -60,10 +62,22 @@ jobs:
           docker build --platform linux/amd64 --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }} ./apps/service-llm-responses/
           docker push registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}
 
+      - name: Build and push K6 load test image
+        run: |
+          docker build --platform linux/amd64 -t registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }} ./apps/service-llm-hives/k6
+          docker push registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }}
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
+
+      - name: Update Kubernetes manifests with new image tags
+        run: |
+          sed -i "s|REPLACE_WITH_SHA|${{ github.sha }}|g" ./k8s/api-gateway-deployment.yaml
+          sed -i "s|REPLACE_WITH_SHA|${{ github.sha }}|g" ./k8s/service-user-deployment.yaml
+          sed -i "s|REPLACE_WITH_SHA|${{ github.sha }}|g" ./k8s/service-llm-hives-deployment.yaml
+          sed -i "s|REPLACE_WITH_SHA|${{ github.sha }}|g" ./k8s/service-llm-responses-deployment.yaml
 
       - name: Configure kubeconfig and deploy
         run: |
@@ -75,28 +89,12 @@ jobs:
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 
-      - name: Update Kubernetes manifests with new image tags
-        run: |
-          sed -i "s|registry.digitalocean.com/hive-services-registry/api-gateway:.*|registry.digitalocean.com/hive-services-registry/api-gateway:${{ github.sha }}|g" ./k8s/api-gateway-deployment.yaml
-          sed -i "s|registry.digitalocean.com/hive-services-registry/service-user:.*|registry.digitalocean.com/hive-services-registry/service-user:${{ github.sha }}|g" ./k8s/service-user-deployment.yaml
-          sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-hives:.*|registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }}|g" ./k8s/service-llm-hives-deployment.yaml
-          sed -i "s|registry.digitalocean.com/hive-services-registry/service-llm-responses:.*|registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}|g" ./k8s/service-llm-responses-deployment.yaml
-
-      - name: Rollout restart deployments
-        run: |
-          export KUBECONFIG=$HOME/.kube/config
-          kubectl rollout restart deployment api-gateway
-          kubectl rollout restart deployment service-user
-          kubectl rollout restart deployment service-llm-hives
-          kubectl rollout restart deployment service-llm-responses
-
       - name: Verify pods status
         run: |
           export KUBECONFIG=$HOME/.kube/config
           kubectl get pods
 
-      - name: Build and push K6 load test image
-        run: |
-
       - name: Run K6 load test jobs
         run: |
+          export KUBECONFIG=$HOME/.kube/config
+          # Add your K6 load test commands here

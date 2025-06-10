@@ -16,7 +16,7 @@ spec:
         - name: do-registry
       containers:
         - name: service-llm-responses
-          image: registry.digitalocean.com/hive-services-registry/service-llm-responses:latest
+          image: registry.digitalocean.com/hive-services-registry/service-llm-responses:REPLACE_WITH_SHA
           ports:
             - containerPort: 3004
           env:
