@@ -42,22 +42,22 @@ jobs:
 
       - name: Build and push api-gateway image
         run: |
-          docker build -t registry.digitalocean.com/hive-services-registry/api-gateway:${{ github.sha }} ./apps/api-gateway/
+          docker build --platform linux/amd64 -t registry.digitalocean.com/hive-services-registry/api-gateway:${{ github.sha }} ./apps/api-gateway/
           docker push registry.digitalocean.com/hive-services-registry/api-gateway:${{ github.sha }}
 
       - name: Build and push service-user image
         run: |
-          docker build -t registry.digitalocean.com/hive-services-registry/service-user:${{ github.sha }} ./apps/service-user/
+          docker build --platform linux/amd64 -t registry.digitalocean.com/hive-services-registry/service-user:${{ github.sha }} ./apps/service-user/
           docker push registry.digitalocean.com/hive-services-registry/service-user:${{ github.sha }}
 
       - name: Build and push service-llm-hives image
         run: |
-          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }} ./apps/service-llm-hives/
+          docker build --platform linux/amd64 --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }} ./apps/service-llm-hives/
           docker push registry.digitalocean.com/hive-services-registry/service-llm-hives:${{ github.sha }}
 
       - name: Build and push service-llm-responses image
         run: |
-          docker build --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }} ./apps/service-llm-responses/
+          docker build --platform linux/amd64 --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }} ./apps/service-llm-responses/
           docker push registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}
 
       - name: Set up kubectl
@@ -97,8 +97,6 @@ jobs:
 
       - name: Build and push K6 load test image
         run: |
-          docker build -t registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }} ./apps/service-llm-hives/k6
-          docker push registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }}
 
       - name: Run K6 load test jobs
         run: |

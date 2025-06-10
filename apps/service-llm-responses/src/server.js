@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const baseUrl = process.env.SERVICE_LLM_RESPONSES || null;
+const baseUrl = process.env.SERVICE_LLM_RESPONSES;
 const port = process.env.PORT || 3004;
 
 console.log('Starting with baseUrl:', baseUrl, 'port:', port);
