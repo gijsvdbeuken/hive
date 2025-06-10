@@ -43,6 +43,7 @@ next-env.d.ts
 # kubernetes secrets
 /k8s/pg-secret.yaml
 /k8s/auth0-secret.yaml
+/k8s/hive-kubernetes-cluster-kubeconfig.yaml
 
 # config secrets
 /config.yaml
