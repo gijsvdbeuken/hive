@@ -29,6 +29,15 @@ app.use(
 );
 app.use('/api', apiGatewayRoutes);
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    service: 'api-gateway',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 app.listen(port, () => {
   console.log(`api-gateway running at ${baseUrl}`);
 });

@@ -35,6 +35,15 @@ app.use(
 
 app.use('/api/users', userRoutes);
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    service: 'service-llm-user',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 app.listen(port, () => {
   console.log(`service-user running at ${baseUrl}`);
 });

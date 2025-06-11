@@ -16,6 +16,15 @@ const userRoutes = require('./routes/llmMerging');
 
 app.use('/users', userRoutes);
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    service: 'service-llm-merging',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 app.listen(port, () => {
   console.log(`User Service running at ${baseUrl}`);
 });

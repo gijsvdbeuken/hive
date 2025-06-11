@@ -30,12 +30,20 @@ app.use(
 );
 app.use('/api/chat', llmResponsesRoutes);
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    service: 'service-llm-responses',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 const server = app.listen(port, '0.0.0.0', () => {
   console.log(`service-llm-responses running at ${baseUrl}`);
   console.log('Server is ready and listening on port', port);
 });
 
-// Keep the process alive
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
   server.close(() => {

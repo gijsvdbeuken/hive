@@ -34,6 +34,15 @@ app.use(
 );
 app.use('/api/hives', llmHivesRoutes);
 
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    service: 'service-llm-hives',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 app.listen(port, () => {
   console.log(`service-llm-hives running at ${baseUrl}`);
 });
