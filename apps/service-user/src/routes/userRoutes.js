@@ -27,11 +27,12 @@ router.get('/:auth0_id', async (req, res) => {
 
     if (rows.length === 0) {
       const newUserId = uuidv4();
+      const uniqueUsername = `user_${uuidv4().substring(0, 8)}`;
 
       await pool.query(
         `INSERT INTO users (id, auth0_id, username, role, plan, created_at)
-         VALUES ($1, $2, '', 'user', 'free', NOW())`,
-        [newUserId, auth0_id],
+         VALUES ($1, $2, $3, 'user', 'free', NOW())`,
+        [newUserId, auth0_id, uniqueUsername],
       );
 
       await pool.query(
