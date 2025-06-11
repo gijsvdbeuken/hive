@@ -1,16 +1,21 @@
-name: Load Testing with k6
+name: Load Testing Suite
 
 on:
   workflow_dispatch:
     inputs:
+      test_type:
+        description: 'Type of test to run'
+        required: true
+        default: 'infrastructure'
+        type: choice
+        options:
+          - infrastructure
+          - full-suite
+          - ai-verification
       target_url:
-        description: 'Target URL for testing'
+        description: 'Target URL'
         required: false
         default: 'https://api.hive-app.nl'
-      test_file:
-        description: 'Test file to run'
-        required: false
-        default: 'health-check.js'
 
 jobs:
   load-test:
@@ -23,15 +28,21 @@ jobs:
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
 
-      - name: Run k6 test
+      - name: Run Infrastructure Tests
+        if: ${{ github.event.inputs.test_type == 'infrastructure' || github.event.inputs.test_type == 'full-suite' }}
         working-directory: apps/k6-tests
         run: |
-          k6 run tests/${{ github.event.inputs.test_file || 'health-check.js' }} \
-            --env API_BASE_URL=${{ github.event.inputs.target_url || 'https://api.hive-app.nl' }}
+          k6 run tests/health-check.js --env API_BASE_URL=${{ github.event.inputs.target_url }}
+          k6 run tests/user-service.js --env API_BASE_URL=${{ github.event.inputs.target_url }}
+          k6 run tests/llm-hives-workflow.js --env API_BASE_URL=${{ github.event.inputs.target_url }}
+          k6 run tests/llm-responses-test.js --env API_BASE_URL=${{ github.event.inputs.target_url }}
 
-      - name: Upload k6 results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: k6-results
-          path: apps/k6-tests/results/
+      - name: Run Full Suite
+        if: ${{ github.event.inputs.test_type == 'full-suite' }}
+        working-directory: apps/k6-tests
+        run: ./run-suite.sh ${{ github.event.inputs.target_url }}
+
+      - name: Run AI Verification Only
+        if: ${{ github.event.inputs.test_type == 'ai-verification' }}
+        working-directory: apps/k6-tests
+        run: k6 run tests/llm-responses-ai-verify.js --env API_BASE_URL=${{ github.event.inputs.target_url }}
