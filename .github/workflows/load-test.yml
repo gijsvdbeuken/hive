@@ -24,8 +24,8 @@ jobs:
         uses: grafana/setup-k6-action@v1
 
       - name: Run k6 test
+        working-directory: apps/k6-tests
         run: |
-          cd apps/k6-tests
           k6 run tests/${{ github.event.inputs.test_file || 'health-check.js' }} \
             --env API_BASE_URL=${{ github.event.inputs.target_url || 'https://api.hive-app.nl' }}
 
