@@ -23,12 +23,3 @@ jobs:
             --env API_BASE_URL=https://api.hive-app.nl
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
-
-      - name: Backup Local Analysis
-        working-directory: apps/k6-tests
-        continue-on-error: true
-        run: |
-          k6 run tests/production-health-monitor.js \
-            --env API_BASE_URL=https://api.hive-app.nl \
-            --out csv=monitoring-backup.csv
-          node analyze-monitoring.js
