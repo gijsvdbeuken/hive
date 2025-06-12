@@ -3,14 +3,15 @@ import { check, sleep } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '30s', target: 5 },
-    { duration: '1m', target: 5 },
-    { duration: '30s', target: 10 },
-    { duration: '1m', target: 10 },
+    { duration: '30s', target: 25 },
+    { duration: '1m', target: 25 },
+    { duration: '30s', target: 50 },
+    { duration: '1m', target: 50 },
+    { duration: '30s', target: 75 },
+    { duration: '1m', target: 75 },
     { duration: '30s', target: 0 },
   ],
 };
-
 export default function () {
   const baseUrl = __ENV.API_BASE_URL || 'https://api.hive-app.nl';
   const testAuth0Id = `delete_test_${__VU}_${__ITER}_${Date.now()}`;

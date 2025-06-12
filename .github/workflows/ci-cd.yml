@@ -62,11 +62,6 @@ jobs:
           docker build --platform linux/amd64 --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -t registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }} ./apps/service-llm-responses/
           docker push registry.digitalocean.com/hive-services-registry/service-llm-responses:${{ github.sha }}
 
-      - name: Build and push K6 load test image
-        run: |
-          docker build --platform linux/amd64 -t registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }} ./apps/service-llm-hives/k6
-          docker push registry.digitalocean.com/hive-services-registry/k6-loadtest:${{ github.sha }}
-
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
@@ -93,8 +88,3 @@ jobs:
         run: |
           export KUBECONFIG=$HOME/.kube/config
           kubectl get pods
-
-      - name: Run K6 load test jobs
-        run: |
-          export KUBECONFIG=$HOME/.kube/config
-          # Add your K6 load test commands here
