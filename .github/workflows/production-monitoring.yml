@@ -21,5 +21,6 @@ jobs:
         run: |
           k6 cloud tests/production-health-monitor.js \
             --env API_BASE_URL=https://api.hive-app.nl
+            --exit-on-running
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
