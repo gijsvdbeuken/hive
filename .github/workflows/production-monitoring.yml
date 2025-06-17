@@ -19,8 +19,7 @@ jobs:
       - name: Run Health Monitoring in k6 Cloud
         working-directory: apps/k6-tests
         run: |
-          k6 cloud tests/production-health-monitor.js \
+          k6 cloud --exit-on-running tests/production-health-monitor.js \
             --env API_BASE_URL=https://api.hive-app.nl
-            --exit-on-running
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
