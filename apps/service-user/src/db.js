@@ -18,14 +18,11 @@ if (!PG_USER || !PG_HOST || !PG_DATABASE || !PG_PASSWORD) {
 }
 
 const pool = new Pool({
-  user: PG_USER,
-  host: PG_HOST,
-  database: PG_DATABASE,
-  password: PG_PASSWORD,
-  port: PG_PORT ? parseInt(PG_PORT) : 5432,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
+  max: 1,
 });
 
 export const connectDB = async () => {
