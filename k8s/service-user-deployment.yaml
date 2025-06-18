@@ -22,6 +22,11 @@ spec:
           env:
             - name: SERVICE_USER
               value: 'http://service-user:3002'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: service-user-secret
+                  key: DATABASE_URL
             - name: PG_USER
               valueFrom:
                 secretKeyRef:
